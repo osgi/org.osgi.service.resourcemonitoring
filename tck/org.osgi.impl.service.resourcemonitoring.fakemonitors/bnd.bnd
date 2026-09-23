@@ -1,0 +1,9 @@
+# Set javac settings from JDT prefs
+
+Bundle-Vendor				= Orange
+Bundle-Activator: org.osgi.impl.service.resourcemonitoring.fakemonitors.Activator
+Bundle-Description: Fake Monitors
+
+-privatepackage: ${p}.*
+
+p: org.osgi.impl.service.resourcemonitoring.fakemonitors
