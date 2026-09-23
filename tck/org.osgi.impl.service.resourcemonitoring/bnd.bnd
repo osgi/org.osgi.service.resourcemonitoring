@@ -1,0 +1,11 @@
+# Set javac settings from JDT prefs
+
+Bundle-Vendor				= Orange
+Bundle-Activator			= org.osgi.impl.service.resourcemonitoring.Activator
+Bundle-Description			= The Resource Monitoring reference implementation bundle.
+
+Export-Service				= org.osgi.service.resourcemonitoring.ResourceMonitoringService
+
+-privatepackage: ${p}.*
+
+p: org.osgi.impl.service.resourcemonitoring
