@@ -1,0 +1,82 @@
+@options
+@packages
+-classpath
+'/home/stbischof/.m2/repository/org/osgi/org.osgi.framework/1.10.0/org.osgi.framework-1.10.0.jar:/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/api/target/org.osgi.service.resourcemonitoring-1.0.2-SNAPSHOT.jar:/home/stbischof/.m2/repository/org/osgi/org.osgi.annotation.versioning/1.1.2/org.osgi.annotation.versioning-1.1.2.jar:/home/stbischof/.m2/repository/org/osgi/org.osgi.annotation.bundle/2.0.0/org.osgi.annotation.bundle-2.0.0.jar:/home/stbischof/.m2/repository/org/osgi/org.osgi.util.tracker/1.5.4/org.osgi.util.tracker-1.5.4.jar:/home/stbischof/.m2/repository/org/osgi/osgi.annotation/8.0.1/osgi.annotation-8.0.1.jar'
+-encoding
+'UTF-8'
+-protected
+--release
+8
+-sourcepath
+'/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/src/main/java:/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 1980 <a href="https://www.eclipse.org/">Eclipse Foundation</a>. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs'
+-docencoding
+'UTF-8'
+-Xdoclint:none
+-doctitle
+'org.osgi.impl.service.resourcemonitoring 1.0.2-SNAPSHOT API'
+-linkoffline
+'https://docs.oracle.com/javase/8/docs/api' '/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/javadoc-bundle-options'
+-linkoffline
+'https://projects.eclipse.org/projects/technology.osgi/org.osgi.service.resourcemonitoring.reactor/org.osgi.service.resourcemonitoring/apidocs' '/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/api/target/apidocs'
+-notimestamp
+-tag
+"Immutable:t:Immutable"
+-tag
+"ThreadSafe:t:ThreadSafe"
+-tag
+"NotThreadSafe:t:NotThreadSafe"
+-tag
+"GuardedBy:mf:Guarded By:"
+-tag
+"security:m:Required Permissions"
+-tag
+"noimplement:t:Consumers of this API must not implement this interface"
+-tag
+"implNote:a:Implementation Note:"
+-use
+-version
+-windowtitle
+'org.osgi.impl.service.resourcemonitoring 1.0.2-SNAPSHOT API'
+org.osgi.impl.service.resourcemonitoring
+org.osgi.impl.service.resourcemonitoring.bundlemanagement
+org.osgi.impl.service.resourcemonitoring.lock
+org.osgi.impl.service.resourcemonitoring.persistency
+org.osgi.impl.service.resourcemonitoring.persistency.json
+/home/stbischof/.m2/repository/org/osgi/org.osgi.framework/1.10.0/org.osgi.framework-1.10.0.jar = 1607377478000
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/api/target/org.osgi.service.resourcemonitoring-1.0.2-SNAPSHOT.jar = 1790091418554
+/home/stbischof/.m2/repository/org/osgi/org.osgi.annotation.versioning/1.1.2/org.osgi.annotation.versioning-1.1.2.jar = 1634136809000
+/home/stbischof/.m2/repository/org/osgi/org.osgi.annotation.bundle/2.0.0/org.osgi.annotation.bundle-2.0.0.jar = 1644360733000
+/home/stbischof/.m2/repository/org/osgi/org.osgi.util.tracker/1.5.4/org.osgi.util.tracker-1.5.4.jar = 1634136906000
+/home/stbischof/.m2/repository/org/osgi/osgi.annotation/8.0.1/osgi.annotation-8.0.1.jar = 1634136808000
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/src/main/java = 1790012139694
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/generated-sources/annotations = 1790091487327
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/element-list = 1790093635318
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/constant-values.html = 1790093635460
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/serialized-form.html = 1790093635487
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/overview-tree.html = 1790093635789
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/index.html = 1790093635802
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/allclasses-index.html = 1790093635879
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/allpackages-index.html = 1790093635900
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/module-search-index.js = 1790093635902
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/package-search-index.js = 1790093635904
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/type-search-index.js = 1790093635905
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/member-search-index.js = 1790093635907
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/tag-search-index.js = 1790093635908
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/index-all.html = 1790093636041
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/search.html = 1790093636047
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/overview-summary.html = 1790093636050
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/help-doc.html = 1790093636093
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/stylesheet.css = 1790093636100
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/script.js = 1790093636102
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/copy.svg = 1790093636104
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/link.svg = 1790093636105
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/search.js = 1790093636111
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/search-page.js = 1790093636114
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.impl.service.resourcemonitoring/target/apidocs/javadoc.sh = 1790091499132

@@ -1,0 +1,238 @@
+<section xmlns="http://docbook.org/ns/docbook"
+         xreflabel="org.osgi.service.resourcemonitoring.monitor"
+         version="5"
+         role="package"
+         xml:id="org.osgi.service.resourcemonitoring.monitor">
+   <title>org.osgi.service.resourcemonitoring.monitor</title>
+   <info>
+      <releaseinfo xml:id="org.osgi.service.resourcemonitoring.monitor-version">Version 1.0</releaseinfo>
+      <edition xml:id="org.osgi.service.resourcemonitoring.monitor-version.number">1.0</edition>
+   </info>
+   <para>
+Resource Monitoring Monitor Package Version 1.0.
+
+ </para>
+   <para>
+ Bundles wishing to use this package must list the package in the
+ Import-Package header of the bundle's manifest. This package has two types of
+ users: the consumers that use the API in this package and the providers that
+ implement the API in this package.
+
+ </para>
+   <para>
+ Example import for consumers using the API in this package:
+ </para>
+   <para>
+ {@code  Import-Package: org.osgi.service.resourcemonitoring.monitor; version="[1.0,2.0)"}
+ </para>
+   <para>
+ Example import for providers implementing the API in this package:
+ </para>
+   <para>
+ {@code  Import-Package: org.osgi.service.resourcemonitoring.monitor; version="[1.0,1.1)"}</para>
+   <section role="summary">
+      <title>Summary</title>
+      <itemizedlist>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.resourcemonitoring.monitor.CPUMonitor">
+                  <code>CPUMonitor</code>
+               </link> - 
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_CPU} resource type.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.resourcemonitoring.monitor.DiskStorageMonitor">
+                  <code>DiskStorageMonitor</code>
+               </link> - 
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_DISK_STORAGE} resource type.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.resourcemonitoring.monitor.MemoryMonitor">
+                  <code>MemoryMonitor</code>
+               </link> - 
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_MEMORY} resource type.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.resourcemonitoring.monitor.SocketMonitor">
+                  <code>SocketMonitor</code>
+               </link> - 
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_SOCKET} resource type.
+   </para>
+         </listitem>
+         <listitem>
+            <para>
+               <link linkend="org.osgi.service.resourcemonitoring.monitor.ThreadMonitor">
+                  <code>ThreadMonitor</code>
+               </link> - 
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_THREADS} resource type.
+   </para>
+         </listitem>
+      </itemizedlist>
+   </section>
+   <section xreflabel="CPUMonitor"
+            role="class"
+            xml:id="org.osgi.service.resourcemonitoring.monitor.CPUMonitor">
+      <title>public abstract CPUMonitor<?line-break?> extends ResourceMonitor&lt;Long&gt;</title>
+      <para>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_CPU} resource type. CPUMonitor
+ instance monitors the CPU consumed by a {@link ResourceContext} instance.
+   </para>
+      <section xreflabel="getCPUUsage()"
+               role="method"
+               xml:id="org.osgi.service.resourcemonitoring.monitor.CPUMonitor.getCPUUsage--">
+         <title>public abstract long getCPUUsage()</title>
+         <para role="description">
+Returns the CPU usage as a cumulative number of nanoseconds
+ </para>
+         <para>
+ The {@link #getUsage()} method returns the same value, wrapped in a long.</para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the CPU usage in nanoseconds</para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="DiskStorageMonitor"
+            role="class"
+            xml:id="org.osgi.service.resourcemonitoring.monitor.DiskStorageMonitor">
+      <title>public abstract DiskStorageMonitor<?line-break?> extends ResourceMonitor&lt;Long&gt;</title>
+      <para>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_DISK_STORAGE} resource type. A
+ DiskStorageMonitor instance monitors and limits the persistent storage of the
+ bundle belonging to the {@link ResourceContext}
+   </para>
+      <section xreflabel="getUsedDiskStorage()"
+               role="method"
+               xml:id="org.osgi.service.resourcemonitoring.monitor.DiskStorageMonitor.getUsedDiskStorage--">
+         <title>public abstract long getUsedDiskStorage()</title>
+         <para role="description">
+Returns the sum of the size of the persistent storage areas of the
+ bundles in this resource context.
+ </para>
+         <para>
+ The {@link #getUsage()} method returns the same value, wrapped in a long.</para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the sum of the sizes of the persistent storage areas in bytes</para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="MemoryMonitor"
+            role="class"
+            xml:id="org.osgi.service.resourcemonitoring.monitor.MemoryMonitor">
+      <title>public abstract MemoryMonitor<?line-break?> extends ResourceMonitor&lt;Long&gt;</title>
+      <para>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_MEMORY} resource type. A
+ MemoryMonitor instance monitors and limits the memory used by a
+ {@link ResourceContext} instance.
+   </para>
+      <section xreflabel="getMemoryUsage()"
+               role="method"
+               xml:id="org.osgi.service.resourcemonitoring.monitor.MemoryMonitor.getMemoryUsage--">
+         <title>public abstract long getMemoryUsage()</title>
+         <para role="description">
+Returns the size of the java heap used by the bundles in this resource
+ context.
+ </para>
+         <para>
+ The {@link #getUsage()} method returns the same value, wrapped in a long.</para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the size of the used java heap in bytes</para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="SocketMonitor"
+            role="class"
+            xml:id="org.osgi.service.resourcemonitoring.monitor.SocketMonitor">
+      <title>public abstract SocketMonitor<?line-break?> extends ResourceMonitor&lt;Long&gt;</title>
+      <para>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_SOCKET} resource type.
+ {@link SocketMonitor} instance are used to monitor and limit the number of
+ in-use sockets per {@link ResourceContext} instance. {@link SocketMonitor}
+ instance handle all types of sockets (TCP, UDP, ...).
+ </para>
+      <para>
+ A TCP socket is considered to be in-use when it is bound (
+ {@link Socket#bind(java.net.SocketAddress)}) or when it is connected (
+ {@link Socket#connect(java.net.SocketAddress)}). It leaves the in-use state
+ when the socket is closed ({@link Socket#close()}). *
+ </para>
+      <para>
+ A UDP socket is in-use when it is bound (
+ {@link DatagramSocket#bind(java.net.SocketAddress)}) or connected (
+ {@link DatagramSocket#connect(java.net.SocketAddress)}). A UDP Socket leaves
+ the in-use state when it is closed ({@link DatagramSocket#close()}).</para>
+      <section xreflabel="getSocketUsage()"
+               role="method"
+               xml:id="org.osgi.service.resourcemonitoring.monitor.SocketMonitor.getSocketUsage--">
+         <title>public abstract long getSocketUsage()</title>
+         <para role="description">
+Returns the number of existing socket created by a
+ {@link ResourceContext}.
+ </para>
+         <para>
+ The {@link #getUsage()} method returns the same value, wrapped in a long.</para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the number of existing socket.</para>
+         </formalpara>
+      </section>
+   </section>
+   <section xreflabel="ThreadMonitor"
+            role="class"
+            xml:id="org.osgi.service.resourcemonitoring.monitor.ThreadMonitor">
+      <title>public abstract ThreadMonitor<?line-break?> extends ResourceMonitor&lt;Integer&gt;</title>
+      <para>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_THREADS} resource type. A
+ ThreadMonitor instance monitors and limits the thread created by a
+ {@link ResourceContext} instance.
+   </para>
+      <section xreflabel="getAliveThreads()"
+               role="method"
+               xml:id="org.osgi.service.resourcemonitoring.monitor.ThreadMonitor.getAliveThreads--">
+         <title>public abstract int getAliveThreads()</title>
+         <para role="description">
+Returns the number of alive threads created by the bundles in this
+ resource context. A Thread is considered to be alive when its java state
+ is one of the following:
+ </para>
+         <itemizedlist>
+            <listitem>
+               <para>RUNNABLE</para>
+            </listitem>
+            <listitem>
+               <para>BLOCKED</para>
+            </listitem>
+            <listitem>
+               <para>WAITING</para>
+            </listitem>
+            <listitem>
+               <para>TIMED_WAITING</para>
+            </listitem>
+         </itemizedlist>
+         <para>
+ The {@link #getUsage()} method returns the same value, wrapped in a int.</para>
+         <formalpara role="parameter">
+            <title>Returns</title>
+            <para>the number of alive threads created by this resource context</para>
+         </formalpara>
+      </section>
+   </section>
+</section>

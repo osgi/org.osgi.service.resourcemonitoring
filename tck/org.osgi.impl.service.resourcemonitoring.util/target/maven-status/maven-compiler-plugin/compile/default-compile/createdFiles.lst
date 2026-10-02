@@ -1,0 +1,4 @@
+org/osgi/impl/service/resourcemonitoring/util/ResourceMonitorInfo.class
+org/osgi/impl/service/resourcemonitoring/util/EventNotifier.class
+org/osgi/impl/service/resourcemonitoring/util/PersistenceException.class
+org/osgi/impl/service/resourcemonitoring/util/Persistence.class
