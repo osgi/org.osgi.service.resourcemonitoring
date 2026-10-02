@@ -1,0 +1,10 @@
+org/osgi/test/cases/resourcemonitoring/TC1_ResourceContextCreationRelatedTestCases.class
+org/osgi/test/cases/resourcemonitoring/utils/FakeResourceMonitor.class
+org/osgi/test/cases/resourcemonitoring/SignatureTestCase.class
+org/osgi/test/cases/resourcemonitoring/TC6_ResourceContextListenerTestCase.class
+org/osgi/test/cases/resourcemonitoring/TC4_ResourceMonitorTestCase.class
+org/osgi/test/cases/resourcemonitoring/utils/ResourceContextListenerTestImpl.class
+org/osgi/test/cases/resourcemonitoring/utils/FakeResourceMonitorFactory.class
+org/osgi/test/cases/resourcemonitoring/TC5_ResourceConsumptionEventingTestCase.class
+org/osgi/test/cases/resourcemonitoring/TC2_ResourceContextDeletionRelatedTestCases.class
+org/osgi/test/cases/resourcemonitoring/TC3_ResourceContextBundleManagementTestCases.class

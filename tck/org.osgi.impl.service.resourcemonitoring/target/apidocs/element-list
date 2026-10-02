@@ -1,0 +1,5 @@
+org.osgi.impl.service.resourcemonitoring
+org.osgi.impl.service.resourcemonitoring.bundlemanagement
+org.osgi.impl.service.resourcemonitoring.lock
+org.osgi.impl.service.resourcemonitoring.persistency
+org.osgi.impl.service.resourcemonitoring.persistency.json

@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"org.osgi.impl.service.resourcemonitoring.fakemonitors","l":"Activator"},{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"org.osgi.impl.service.resourcemonitoring.fakemonitors","l":"FakeMonitor"},{"p":"org.osgi.impl.service.resourcemonitoring.fakemonitors","l":"FakeResourceMonitorFactory"}];updateSearchResults();

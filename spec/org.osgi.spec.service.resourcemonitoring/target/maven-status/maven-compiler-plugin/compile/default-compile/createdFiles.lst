@@ -1,0 +1,17 @@
+org/osgi/service/resourcemonitoring/monitor/CPUMonitor.class
+org/osgi/service/resourcemonitoring/monitor/DiskStorageMonitor.class
+org/osgi/service/resourcemonitoring/ResourceContextListener.class
+org/osgi/service/resourcemonitoring/ResourceMonitorFactory.class
+org/osgi/service/resourcemonitoring/package-info.class
+org/osgi/service/resourcemonitoring/ResourceEvent.class
+org/osgi/service/resourcemonitoring/ResourceContextEvent.class
+org/osgi/service/resourcemonitoring/ResourceContext.class
+org/osgi/service/resourcemonitoring/monitor/package-info.class
+org/osgi/service/resourcemonitoring/monitor/ThreadMonitor.class
+org/osgi/service/resourcemonitoring/ResourceMonitorException.class
+org/osgi/service/resourcemonitoring/ResourceContextException.class
+org/osgi/service/resourcemonitoring/ResourceListener.class
+org/osgi/service/resourcemonitoring/monitor/MemoryMonitor.class
+org/osgi/service/resourcemonitoring/ResourceMonitor.class
+org/osgi/service/resourcemonitoring/ResourceMonitoringService.class
+org/osgi/service/resourcemonitoring/monitor/SocketMonitor.class

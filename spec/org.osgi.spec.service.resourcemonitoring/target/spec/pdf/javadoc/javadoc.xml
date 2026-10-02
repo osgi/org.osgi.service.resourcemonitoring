@@ -1,0 +1,1690 @@
+<?xml version='1.0' encoding='utf-8'?>
+<top>
+  <package name='org.osgi.service.resourcemonitoring' fqn='org.osgi.service.resourcemonitoring' qn='org.osgi.service.resourcemonitoring'>
+<org.osgi.annotation.versioning.Version><value>1.0</value>
+</org.osgi.annotation.versioning.Version>
+   <lead>
+Resource Monitoring Package Version 1.0.
+   </lead>
+   <description>
+Resource Monitoring Package Version 1.0.
+
+ <p>
+ Bundles wishing to use this package must list the package in the
+ Import-Package header of the bundle's manifest. This package has two types of
+ users: the consumers that use the API in this package and the providers that
+ implement the API in this package.
+
+ </p><p>
+ Example import for consumers using the API in this package:
+ </p><p>
+ {@code  Import-Package: org.osgi.service.resourcemonitoring; version="[1.0,2.0)"}
+ </p><p>
+ Example import for providers implementing the API in this package:
+ </p><p>
+ {@code  Import-Package: org.osgi.service.resourcemonitoring; version="[1.0,1.1)"}</p>
+   </description>
+<author>@author $Id: c5028cf2e75a194b7398fa066e1fa0a019a2f826 $</author>
+  <class name='ResourceContext' fqn='org.osgi.service.resourcemonitoring.ResourceContext' qn='ResourceContext' package='org.osgi.service.resourcemonitoring' typeParam='' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+   <lead>
+Logical entity for resource accounting.
+   </lead>
+   <description>
+Logical entity for resource accounting. A resource context has a group of
+ member bundles, and a bundle can be a member of 0 or 1 resource context.
+ 
+ <p>
+ Resource Monitoring Clients can use the
+ {@link ResourceMonitoringService#createContext(String, ResourceContext)}
+ method to create ResourceContext instances.
+ 
+ </p><p>
+ Resource Monitoring Clients can use the {@link #getMonitor(String)} method to
+ get {@link ResourceMonitor} instances for the supported resource types. These
+ instances can then be used to monitor the usage of the resources, or the set
+ usage limits.
+ 
+ </p><p>
+ ResourceContexts are retrieved through the {@link ResourceMonitoringService}
+ OSGi service.</p>
+   </description>
+<version>@version 1.0</version><author>@author $Id: b7a88c81a050b2536c645e45261a73338aa11c6b $</author>
+    <method name='getName' fqn='org.osgi.service.resourcemonitoring.ResourceContext.getName' qn='ResourceContext.getName()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='String' qualifiedTypeName='java.lang.String' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the name of the resource context.
+   </lead>
+   <description>
+Returns the name of the resource context. Resource context names are
+ unique within a framework instance.
+   </description>
+
+
+<return>The resource context name</return>
+
+
+
+     </method>
+    <method name='getBundleIds' fqn='org.osgi.service.resourcemonitoring.ResourceContext.getBundleIds' qn='ResourceContext.getBundleIds()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='long[]' qualifiedTypeName='long[]' typeArgs='' dimension='[]' signature='()' flatSignature='()'>
+   <lead>
+Returns the bundle identifiers belonging to this Resource Context.
+   </lead>
+   <description>
+Returns the bundle identifiers belonging to this Resource Context.
+   </description>
+
+
+<return>An array of {@link Bundle} objects, or an empty array if no
+         bundles are currently members of this context</return>
+
+
+
+     </method>
+    <method name='addBundle' fqn='org.osgi.service.resourcemonitoring.ResourceContext.addBundle' qn='ResourceContext.addBundle(long)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='(long)' flatSignature='(long)'>
+   <lead>
+Adds a bundle to the resource context.
+   </lead>
+   <description>
+Adds a bundle to the resource context. The bundle will be a member of the
+ context until it is uninstalled, or explicitly removed from the context
+ with {@link #removeBundle(long)} method or
+ {@link #removeBundle(long, ResourceContext)} method.
+ <p>
+ Resources previously allocated by this bundle (in another resource
+ context) will not be moved to this resource context. The change applies
+ only for future allocations.
+ </p><p>
+ A {@link ResourceContextEvent} with type
+ {@link ResourceContextEvent#BUNDLE_ADDED} will be sent.</p>
+   </description>
+
+<param name='bundleId'>The bundle to add to this resource context</param>
+
+
+<throws name='ResourceContextException'>For example, when the bundle can't be
+         added to the ResourceContext.</throws>
+
+
+    <parameter name='bundleId' dimension='' typeName='long' fqn='long' varargs='false'/>
+<exception name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException'/>
+     </method>
+    <method name='removeBundle' fqn='org.osgi.service.resourcemonitoring.ResourceContext.removeBundle' qn='ResourceContext.removeBundle(long)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='(long)' flatSignature='(long)'>
+   <lead>
+Removes the bundle identified by bundleId from the Resource Context.
+   </lead>
+   <description>
+Removes the bundle identified by bundleId from the Resource Context. The
+ bundle is no longer to this Resource Context.
+   </description>
+
+<param name='bundleId'>bundle identifier</param>
+
+
+<throws name='ResourceContextException'>For example, when the bundle can't be
+         removed from the ResourceContext.</throws>
+
+
+    <parameter name='bundleId' dimension='' typeName='long' fqn='long' varargs='false'/>
+<exception name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException'/>
+     </method>
+    <method name='removeBundle' fqn='org.osgi.service.resourcemonitoring.ResourceContext.removeBundle' qn='ResourceContext.removeBundle(long,ResourceContext)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='(long,org.osgi.service.resourcemonitoring.ResourceContext)' flatSignature='(long,ResourceContext)'>
+   <lead>
+Removes the bundle from this resource context.
+   </lead>
+   <description>
+Removes the bundle from this resource context. If a
+ <code>destination</code> context is specified, the bundle will be added
+ in it.
+ <p>
+ Resources previously allocated by this bundle will not be removed from
+ the resource context. The change applies only for future allocations.
+ </p><p>
+ A {@link ResourceContextEvent} with type
+ {@link ResourceContextEvent#BUNDLE_REMOVED} will be sent.</p>
+   </description>
+
+<param name='bundleId'>the identifier of the bundle to be removed from the
+        Resource Context</param>
+<param name='destination'>A resource context in which to add the bundle, after
+        removing it from this context. If no destination is provided (that
+        is null), the bundle is not associated to a new Resource Context.</param>
+
+
+<throws name='ResourceContextException'>For example, when the bundle can't be
+         removed from the ResourceContext.</throws>
+
+
+    <parameter name='bundleId' dimension='' typeName='long' fqn='long' varargs='false'/>
+    <parameter name='destination' dimension='' typeName='ResourceContext' fqn='org.osgi.service.resourcemonitoring.ResourceContext' varargs='false'/>
+<exception name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException'/>
+     </method>
+    <method name='getMonitor' fqn='org.osgi.service.resourcemonitoring.ResourceContext.getMonitor' qn='ResourceContext.getMonitor(String)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='ResourceMonitor&lt;?&gt;' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceMonitor' typeArgs='' dimension='' signature='(java.lang.String)' flatSignature='(String)'>
+   <lead>
+Returns a ResourceMonitor instance for the specified resource type.
+   </lead>
+   <description>
+Returns a ResourceMonitor instance for the specified resource type. If
+ the {@link ResourceMonitoringService} implementation does not support
+ this resource type, null is returned
+   </description>
+
+<param name='resourceType'>The resource type, for which a resource monitor is
+        requested</param>
+
+<return>A ResourceMonitor instance, or null, if this resource type is not
+         supported</return>
+
+<throws name='ResourceContextException'>For example, when the monitor(s) can't
+         be retrieved from the ResourceContext.</throws>
+
+
+    <parameter name='resourceType' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+<exception name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException'/>
+     </method>
+    <method name='getMonitors' fqn='org.osgi.service.resourcemonitoring.ResourceContext.getMonitors' qn='ResourceContext.getMonitors()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='ResourceMonitor&lt;?&gt;[]' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceMonitor[]' typeArgs='' dimension='[]' signature='()' flatSignature='()'>
+   <lead>
+Retrieves all the existing ResourceMonitor belonging to this context.
+   </lead>
+   <description>
+Retrieves all the existing ResourceMonitor belonging to this context.
+   </description>
+
+
+<return>an array of ResourceMonitor. May be empty if no ResourceMonitor</return>
+
+<throws name='ResourceContextException'>For example, when the monitor(s) can't
+         be retrieved from the ResourceContext.</throws>
+
+
+<exception name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException'/>
+     </method>
+    <method name='addResourceMonitor' fqn='org.osgi.service.resourcemonitoring.ResourceContext.addResourceMonitor' qn='ResourceContext.addResourceMonitor(ResourceMonitor)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='(org.osgi.service.resourcemonitoring.ResourceMonitor&lt;?&gt;)' flatSignature='(ResourceMonitor)'>
+   <lead>
+Adds a new ResourceMonitor instance monitoring resource for this resource
+ context.
+   </lead>
+   <description>
+Adds a new ResourceMonitor instance monitoring resource for this resource
+ context. This method should be called only by ResourceMonitorFactory
+ instance.
+   </description>
+
+<param name='resourceMonitor'>resourceMonitor instance to be added</param>
+
+
+<throws name='ResourceContextException'>For example, when the monitor can't be
+         added to the ResourceContext.</throws>
+
+
+    <parameter name='resourceMonitor' dimension='' typeName='ResourceMonitor&lt;?&gt;' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor' varargs='false'/>
+<exception name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException'/>
+     </method>
+    <method name='removeResourceMonitor' fqn='org.osgi.service.resourcemonitoring.ResourceContext.removeResourceMonitor' qn='ResourceContext.removeResourceMonitor(ResourceMonitor)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='(org.osgi.service.resourcemonitoring.ResourceMonitor&lt;?&gt;)' flatSignature='(ResourceMonitor)'>
+   <lead>
+Removes a ResourceMonitor instance from the context.
+   </lead>
+   <description>
+Removes a ResourceMonitor instance from the context.
+   </description>
+
+<param name='resourceMonitor'>resource monitor instance to be removed</param>
+
+
+<throws name='ResourceContextException'>For example, when the monitor can't be
+         removed from the ResourceContext.</throws>
+
+
+    <parameter name='resourceMonitor' dimension='' typeName='ResourceMonitor&lt;?&gt;' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor' varargs='false'/>
+<exception name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException'/>
+     </method>
+    <method name='removeContext' fqn='org.osgi.service.resourcemonitoring.ResourceContext.removeContext' qn='ResourceContext.removeContext(ResourceContext)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='(org.osgi.service.resourcemonitoring.ResourceContext)' flatSignature='(ResourceContext)'>
+   <lead>
+Removes a resource context.
+   </lead>
+   <description>
+Removes a resource context. All resources allocated in this resource
+ context will be moved to the <code>destination</code> context. If
+ <code>destination</code> is <code>null</code>, these resources will no
+ longer be monitored.
+ <p>
+ A {@link ResourceContextEvent} with type
+ {@link ResourceContextEvent#RESOURCE_CONTEXT_REMOVED} will be sent.</p>
+   </description>
+
+<param name='destination'>The {@link ResourceContext} where the resources
+        currently allocated by this resource context will be moved.</param>
+
+
+<throws name='ResourceContextException'>For example, when the resource context
+         can't be removed.</throws>
+
+
+    <parameter name='destination' dimension='' typeName='ResourceContext' fqn='org.osgi.service.resourcemonitoring.ResourceContext' varargs='false'/>
+<exception name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException'/>
+     </method>
+    <method name='equals' fqn='org.osgi.service.resourcemonitoring.ResourceContext.equals' qn='ResourceContext.equals(Object)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='boolean' qualifiedTypeName='boolean' typeArgs='' dimension='' signature='(java.lang.Object)' flatSignature='(Object)'>
+<java.lang.Override></java.lang.Override>
+   <lead>
+A ResourceContext rc1 is equals to ResourceContext rc2 if rc1.getName()
+ is equals to rc2.getName().
+   </lead>
+   <description>
+A ResourceContext rc1 is equals to ResourceContext rc2 if rc1.getName()
+ is equals to rc2.getName().
+   </description>
+
+<param name='resourceContext'>resource context</param>
+
+<return>true if getName().equals(resourceContext.getName()</return>
+
+
+
+    <parameter name='resourceContext' dimension='' typeName='Object' fqn='java.lang.Object' varargs='false'/>
+     </method>
+    <method name='hashCode' fqn='org.osgi.service.resourcemonitoring.ResourceContext.hashCode' qn='ResourceContext.hashCode()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='int' qualifiedTypeName='int' typeArgs='' dimension='' signature='()' flatSignature='()'>
+<java.lang.Override></java.lang.Override>
+   <lead>
+Retrieves the hashCode value of a ResourceContext.
+   </lead>
+   <description>
+Retrieves the hashCode value of a ResourceContext. The hashCode value of
+ a ResourceContext is only based on the hashcode value of the name of the
+ context.
+   </description>
+
+
+<return>hashcode</return>
+
+
+
+     </method>
+  </class>
+  <class name='ResourceContextEvent' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent' qn='ResourceContextEvent' package='org.osgi.service.resourcemonitoring' typeParam='' modifiers='public class' kind='CLASS'>
+   <lead>
+A Resource Context Event instance is an event sent to Resource Context
+ Listener instances through a call to
+ {@link ResourceContextListener#notify(ResourceContextEvent)} method.
+   </lead>
+   <description>
+A Resource Context Event instance is an event sent to Resource Context
+ Listener instances through a call to
+ {@link ResourceContextListener#notify(ResourceContextEvent)} method.
+ 
+ A Resource Context Event has a type among the four following ones:
+ <ul>
+ <li>{@link #RESOURCE_CONTEXT_CREATED} – A new Resource Context instance has
+ been created.</li>
+ <li>{@link #RESOURCE_CONTEXT_REMOVED} – A Resource Context instance has been
+ deleted.</li>
+ <li>{@link #BUNDLE_ADDED} – A bundle has been added in the scope of a
+ Resource Context instance.</li>
+ <li>{@link #BUNDLE_REMOVED} – A bundle has been removed from the scope of a
+ Resource Context instance.</li>
+ </ul>
+   </description>
+<version>@version 1.0</version><author>@author $Id: 69b1502e23de440d1e52e477197574150e865c26 $</author>
+    <method name='ResourceContextEvent' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.ResourceContextEvent' qn='ResourceContextEvent.ResourceContextEvent(int,ResourceContext)' package='org.osgi.service.resourcemonitoring' typeArgs='' modifiers='public' signature='(int,org.osgi.service.resourcemonitoring.ResourceContext)' flatSignature='(int,ResourceContext)' isConstructor='true'>
+   <lead>
+Create a new ResourceContextEvent.
+   </lead>
+   <description>
+Create a new ResourceContextEvent. This constructor should be used when
+ the type of the event is either {@link #RESOURCE_CONTEXT_CREATED} or
+ {@link #RESOURCE_CONTEXT_REMOVED}.
+   </description>
+
+<param name='pType'>event type</param>
+<param name='pResourceContext'>context</param>
+
+
+
+
+    <parameter name='pType' dimension='' typeName='int' fqn='int' varargs='false'/>
+    <parameter name='pResourceContext' dimension='' typeName='ResourceContext' fqn='org.osgi.service.resourcemonitoring.ResourceContext' varargs='false'/>
+     </method>
+    <method name='ResourceContextEvent' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.ResourceContextEvent' qn='ResourceContextEvent.ResourceContextEvent(int,ResourceContext,long)' package='org.osgi.service.resourcemonitoring' typeArgs='' modifiers='public' signature='(int,org.osgi.service.resourcemonitoring.ResourceContext,long)' flatSignature='(int,ResourceContext,long)' isConstructor='true'>
+   <lead>
+Create a new ResourceContextEvent.
+   </lead>
+   <description>
+Create a new ResourceContextEvent. This constructor should be used when
+ the type of the event is either {@link #BUNDLE_ADDED} or
+ {@link #BUNDLE_REMOVED}.
+   </description>
+
+<param name='pType'>event type</param>
+<param name='pResourceContext'>context</param>
+<param name='pBundleId'>bundle</param>
+
+
+
+
+    <parameter name='pType' dimension='' typeName='int' fqn='int' varargs='false'/>
+    <parameter name='pResourceContext' dimension='' typeName='ResourceContext' fqn='org.osgi.service.resourcemonitoring.ResourceContext' varargs='false'/>
+    <parameter name='pBundleId' dimension='' typeName='long' fqn='long' varargs='false'/>
+     </method>
+    <method name='getType' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.getType' qn='ResourceContextEvent.getType()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='int' qualifiedTypeName='int' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Retrieves the type of this Resource Context Event.
+   </lead>
+   <description>
+Retrieves the type of this Resource Context Event.
+   </description>
+
+
+<return>the type of the event. One of:
+         <ul>
+         <li>{@link #RESOURCE_CONTEXT_CREATED}</li>
+         <li>{@link #RESOURCE_CONTEXT_REMOVED}</li>
+         <li>{@link #BUNDLE_ADDED}</li>
+         <li>{@link #BUNDLE_REMOVED}</li>
+         </ul></return>
+
+
+
+     </method>
+    <method name='getContext' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.getContext' qn='ResourceContextEvent.getContext()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='ResourceContext' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceContext' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Retrieves the Resource Context associated to this event
+   </lead>
+   <description>
+Retrieves the Resource Context associated to this event
+   </description>
+
+
+<return>Resource Context.</return>
+
+
+
+     </method>
+    <method name='getBundleId' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.getBundleId' qn='ResourceContextEvent.getBundleId()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='long' qualifiedTypeName='long' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+<p>
+ Retrieves the identifier of the bundle being added to or removed from the
+ Resource Context.</p>
+   </lead>
+   <description>
+<p>
+ Retrieves the identifier of the bundle being added to or removed from the
+ Resource Context.
+ 
+ </p><p>
+ This method returns a valid value only when {@link #getType()} returns:
+ </p><ul>
+ <li>{@link #BUNDLE_ADDED}</li>
+ <li>{@link #BUNDLE_REMOVED}</li>
+ </ul>
+   </description>
+
+
+<return>the bundle id or -1 (invalid value).</return>
+
+
+
+     </method>
+    <method name='toString' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.toString' qn='ResourceContextEvent.toString()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='String' qualifiedTypeName='java.lang.String' typeArgs='' dimension='' signature='()' flatSignature='()'>
+<java.lang.Override></java.lang.Override>
+   <lead/>
+   <description/>
+     </method>
+    <method name='hashCode' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.hashCode' qn='ResourceContextEvent.hashCode()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='int' qualifiedTypeName='int' typeArgs='' dimension='' signature='()' flatSignature='()'>
+<java.lang.Override></java.lang.Override>
+   <lead/>
+   <description/>
+     </method>
+    <method name='equals' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.equals' qn='ResourceContextEvent.equals(Object)' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='boolean' qualifiedTypeName='boolean' typeArgs='' dimension='' signature='(java.lang.Object)' flatSignature='(Object)'>
+<java.lang.Override></java.lang.Override>
+   <lead/>
+   <description/>
+    <parameter name='var0' dimension='' typeName='Object' fqn='java.lang.Object' varargs='false'/>
+     </method>
+    <field name='RESOURCE_CONTEXT_CREATED' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.RESOURCE_CONTEXT_CREATED' qn='ResourceContextEvent.RESOURCE_CONTEXT_CREATED' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='int' qualifiedTypeName='int' dimension='' constantValue='0'>
+   <lead>
+A new {@link ResourceContext} has been created.
+   </lead>
+   <description>
+A new {@link ResourceContext} has been created.
+ <p>
+ The
+ {@link ResourceMonitoringService#createContext(String, ResourceContext)}
+ method has been invoked.</p>
+   </description>
+
+     </field>
+    <field name='RESOURCE_CONTEXT_REMOVED' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.RESOURCE_CONTEXT_REMOVED' qn='ResourceContextEvent.RESOURCE_CONTEXT_REMOVED' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='int' qualifiedTypeName='int' dimension='' constantValue='1'>
+   <lead>
+A {@link ResourceContext} has been removed
+   </lead>
+   <description>
+A {@link ResourceContext} has been removed
+ <p>
+ The {@link ResourceContext#removeContext(ResourceContext)} method has
+ been invoked</p>
+   </description>
+
+     </field>
+    <field name='BUNDLE_ADDED' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.BUNDLE_ADDED' qn='ResourceContextEvent.BUNDLE_ADDED' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='int' qualifiedTypeName='int' dimension='' constantValue='2'>
+   <lead>
+A bundle has been added to e {@link ResourceContext}
+   </lead>
+   <description>
+A bundle has been added to e {@link ResourceContext}
+ <p>
+ The {@link ResourceContext#addBundle(long)} method has been invoked</p>
+   </description>
+
+     </field>
+    <field name='BUNDLE_REMOVED' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent.BUNDLE_REMOVED' qn='ResourceContextEvent.BUNDLE_REMOVED' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='int' qualifiedTypeName='int' dimension='' constantValue='3'>
+   <lead>
+A bundle has been removed from a {@link ResourceContext}
+   </lead>
+   <description>
+A bundle has been removed from a {@link ResourceContext}
+ <p>
+ {@link ResourceContext#removeBundle(long)} method or
+ {@link ResourceContext#removeBundle(long, ResourceContext)} method have
+ been invoked, or the bundle has been uninstalled</p>
+   </description>
+
+     </field>
+  </class>
+  <class name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException' qn='ResourceContextException' package='org.osgi.service.resourcemonitoring' typeParam='' modifiers='public class' superclass='Exception' kind='CLASS'>
+   <lead>
+Resource Context Exception.
+   </lead>
+   <description>
+Resource Context Exception.
+   </description>
+<version>@version 1.0</version><author>@author $Id: 5a53c6f35babee847c0a45edbc4de7e8f33d0ec8 $</author>
+    <method name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException.ResourceContextException' qn='ResourceContextException.ResourceContextException(String)' package='org.osgi.service.resourcemonitoring' typeArgs='' modifiers='public' signature='(java.lang.String)' flatSignature='(String)' isConstructor='true'>
+   <lead>
+Create a new ResourceContextException
+   </lead>
+   <description>
+Create a new ResourceContextException
+   </description>
+
+<param name='msg'>message</param>
+
+
+
+
+    <parameter name='msg' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+     </method>
+    <method name='ResourceContextException' fqn='org.osgi.service.resourcemonitoring.ResourceContextException.ResourceContextException' qn='ResourceContextException.ResourceContextException(String,Throwable)' package='org.osgi.service.resourcemonitoring' typeArgs='' modifiers='public' signature='(java.lang.String,java.lang.Throwable)' flatSignature='(String,Throwable)' isConstructor='true'>
+   <lead>
+Create a new ResourceContextException
+   </lead>
+   <description>
+Create a new ResourceContextException
+   </description>
+
+<param name='msg'>message</param>
+<param name='t'>exception</param>
+
+
+
+
+    <parameter name='msg' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+    <parameter name='t' dimension='' typeName='Throwable' fqn='java.lang.Throwable' varargs='false'/>
+     </method>
+  </class>
+  <class name='ResourceContextListener' fqn='org.osgi.service.resourcemonitoring.ResourceContextListener' qn='ResourceContextListener' package='org.osgi.service.resourcemonitoring' typeParam='' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+   <lead>
+<p>
+ A <code>ResourceContextListener</code> is notified whenever:
+ </p><ul>
+ <li>a {@link ResourceContext} is created or deleted.</li>
+ <li>a bundle is added or removed from a {@link ResourceContext}.</li>
+ </ul>
+   </lead>
+   <description>
+<p>
+ A <code>ResourceContextListener</code> is notified whenever:
+ </p><ul>
+ <li>a {@link ResourceContext} is created or deleted.</li>
+ <li>a bundle is added or removed from a {@link ResourceContext}.</li>
+ </ul>
+ 
+ <p>
+ A <code>ResourceContextListener</code> is registered as an OSGi service. At
+ registration time, the following property may be provided:
+ </p><ul>
+ <li>the {@link #RESOURCE_CONTEXT} property which limits the Resource Context
+ for which notifications will be received. This property can be either a
+ String value or an array of String. If this property is not set, the Resource
+ Context Listener receives events from all the Resource Context.</li>
+ </ul>
+   </description>
+<version>@version 1.0</version><author>@author $Id: ee28cc1adc0655d33c1cb35e248fe36ade507c16 $</author>
+    <method name='notify' fqn='org.osgi.service.resourcemonitoring.ResourceContextListener.notify' qn='ResourceContextListener.notify(ResourceContextEvent)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='(org.osgi.service.resourcemonitoring.ResourceContextEvent)' flatSignature='(ResourceContextEvent)'>
+   <lead>
+Notify this listener about a {@link ResourceContext} events.
+   </lead>
+   <description>
+Notify this listener about a {@link ResourceContext} events.
+   </description>
+
+<param name='event'>event.</param>
+
+
+
+
+    <parameter name='event' dimension='' typeName='ResourceContextEvent' fqn='org.osgi.service.resourcemonitoring.ResourceContextEvent' varargs='false'/>
+     </method>
+    <field name='RESOURCE_CONTEXT' fqn='org.osgi.service.resourcemonitoring.ResourceContextListener.RESOURCE_CONTEXT' qn='ResourceContextListener.RESOURCE_CONTEXT' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"resource.context"'>
+   <lead>
+<p>
+ Property specifying the {@link ResourceContext}(s) for which a
+ notification will be received by this listener.</p>
+   </lead>
+   <description>
+<p>
+ Property specifying the {@link ResourceContext}(s) for which a
+ notification will be received by this listener.
+ 
+ </p><p>
+ The property value is either a string (i.e the name of the
+ {@link ResourceContext}) and an array of string (several
+ {@link ResourceContext}).</p>
+   </description>
+
+     </field>
+  </class>
+  <class name='ResourceEvent' fqn='org.osgi.service.resourcemonitoring.ResourceEvent' qn='ResourceEvent' package='org.osgi.service.resourcemonitoring' typeParam='&lt;T&gt;' modifiers='public class' kind='CLASS'>
+   <lead>
+<p>
+ An event is sent to a {@link ResourceListener} when resource usage violates
+ one of their thresholds.</p>
+   </lead>
+   <description>
+<p>
+ An event is sent to a {@link ResourceListener} when resource usage violates
+ one of their thresholds.
+ 
+ </p><p>
+ <code>ResourceEvent</code> objects are delivered synchronously to all
+ matching {@link ResourceListener} services. A typed code is used to identify
+ the event.</p>
+   </description>
+<a href='#ResourceListener'>ResourceListener</a><version>@version 1.0</version><author>@author $Id: 2c1fe38b57105cc9d5c5f90eb7a7947736a97539 $</author><param name='&lt;T&gt;'>The type for the Resource.</param>
+
+    <method name='ResourceEvent' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.ResourceEvent' qn='ResourceEvent.ResourceEvent(int,ResourceContext,boolean,Comparable)' package='org.osgi.service.resourcemonitoring' typeArgs='' modifiers='public' signature='(int,org.osgi.service.resourcemonitoring.ResourceContext,boolean,java.lang.Comparable&lt;T&gt;)' flatSignature='(int,ResourceContext,boolean,Comparable)' isConstructor='true'>
+   <lead>
+Creates a new ResourceEvent.
+   </lead>
+   <description>
+Creates a new ResourceEvent.
+   </description>
+
+<param name='pType'>the event type</param>
+<param name='pContext'>the resource context</param>
+<param name='pIsUpperThreshold'>whether it is an upper threshold</param>
+<param name='pValue'>the value</param>
+
+
+
+
+    <parameter name='pType' dimension='' typeName='int' fqn='int' varargs='false'/>
+    <parameter name='pContext' dimension='' typeName='ResourceContext' fqn='org.osgi.service.resourcemonitoring.ResourceContext' varargs='false'/>
+    <parameter name='pIsUpperThreshold' dimension='' typeName='boolean' fqn='boolean' varargs='false'/>
+    <parameter name='pValue' dimension='' typeName='Comparable&lt;T&gt;' fqn='java.lang.Comparable' varargs='false'/>
+     </method>
+    <method name='getType' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.getType' qn='ResourceEvent.getType()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='int' qualifiedTypeName='int' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the event type.
+   </lead>
+   <description>
+Returns the event type. The type values are:
+ <ul>
+ <li>{@link #NORMAL}</li>
+ <li>{@link #WARNING}</li>
+ <li>{@link #ERROR}</li>
+ </ul>
+   </description>
+
+
+<return>The event type</return>
+
+
+
+     </method>
+    <method name='getValue' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.getValue' qn='ResourceEvent.getValue()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='Comparable&lt;T&gt;' qualifiedTypeName='java.lang.Comparable' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the resource consumption value.
+   </lead>
+   <description>
+Returns the resource consumption value. Relevant only for event types
+ {@link #NORMAL}, {@link #WARNING} and {@link #ERROR}.
+   </description>
+
+
+<return>the resource consumption value, or null if a resource monitor is
+         not relevant.</return>
+
+
+
+     </method>
+    <method name='getContext' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.getContext' qn='ResourceEvent.getContext()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='ResourceContext' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceContext' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the resource context that caused the event.
+   </lead>
+   <description>
+Returns the resource context that caused the event.
+   </description>
+
+
+<return>The resource context that caused the event.</return>
+
+
+
+     </method>
+    <method name='isUpperThreshold' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.isUpperThreshold' qn='ResourceEvent.isUpperThreshold()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='boolean' qualifiedTypeName='boolean' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns true if the threshold triggering this event is an upper
+ threshold.
+   </lead>
+   <description>
+Returns true if the threshold triggering this event is an upper
+ threshold. This method is only used when {@link #getType()} returns
+ {@link #NORMAL}, {@link #WARNING} or {@link #ERROR}.
+   </description>
+
+
+<return>true if it is an upper threshold.</return>
+
+
+
+     </method>
+    <method name='hashCode' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.hashCode' qn='ResourceEvent.hashCode()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='int' qualifiedTypeName='int' typeArgs='' dimension='' signature='()' flatSignature='()'>
+<java.lang.Override></java.lang.Override>
+   <lead/>
+   <description/>
+     </method>
+    <method name='equals' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.equals' qn='ResourceEvent.equals(Object)' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='boolean' qualifiedTypeName='boolean' typeArgs='' dimension='' signature='(java.lang.Object)' flatSignature='(Object)'>
+<java.lang.Override></java.lang.Override>
+   <lead/>
+   <description/>
+    <parameter name='var0' dimension='' typeName='Object' fqn='java.lang.Object' varargs='false'/>
+     </method>
+    <method name='toString' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.toString' qn='ResourceEvent.toString()' package='org.osgi.service.resourcemonitoring' modifiers='public' typeName='String' qualifiedTypeName='java.lang.String' typeArgs='' dimension='' signature='()' flatSignature='()'>
+<java.lang.Override></java.lang.Override>
+   <lead/>
+   <description/>
+     </method>
+    <field name='NORMAL' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.NORMAL' qn='ResourceEvent.NORMAL' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='int' qualifiedTypeName='int' dimension='' constantValue='0'>
+   <lead>
+Type of ResourceEvent indicating a threshold goes to the NORMAL state.
+   </lead>
+   <description>
+Type of ResourceEvent indicating a threshold goes to the NORMAL state.
+   </description>
+
+     </field>
+    <field name='WARNING' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.WARNING' qn='ResourceEvent.WARNING' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='int' qualifiedTypeName='int' dimension='' constantValue='1'>
+   <lead>
+Type of ResourceEvent indicating a threshold goes to the WARNING state.
+   </lead>
+   <description>
+Type of ResourceEvent indicating a threshold goes to the WARNING state.
+   </description>
+
+     </field>
+    <field name='ERROR' fqn='org.osgi.service.resourcemonitoring.ResourceEvent.ERROR' qn='ResourceEvent.ERROR' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='int' qualifiedTypeName='int' dimension='' constantValue='2'>
+   <lead>
+Type of ResourceEvent indicating a threshold goes to the ERROR state.
+   </lead>
+   <description>
+Type of ResourceEvent indicating a threshold goes to the ERROR state.
+   </description>
+
+     </field>
+  </class>
+  <class name='ResourceListener' fqn='org.osgi.service.resourcemonitoring.ResourceListener' qn='ResourceListener' package='org.osgi.service.resourcemonitoring' typeParam='&lt;T&gt;' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+   <lead>
+<p>
+ A ResourceListener is an OSGi service which is notified when a Resource
+ Context violates one of the threshold defined by the listener.</p>
+   </lead>
+   <description>
+<p>
+ A ResourceListener is an OSGi service which is notified when a Resource
+ Context violates one of the threshold defined by the listener.
+ </p><p>
+ Every ResourceListener is associated to a specific Resource Context and a
+ specific Resource type. It defines two types of thresholds: a lower and a
+ upper. A lower threshold is reached when the resource usage decreases below
+ the threshold. On the contrary, an upper threshold is reached when the
+ resource usage exceeds the threshold.
+ </p><p>
+ Both lower or upper threshold are two levels: a warning level and error
+ level. The warning level indicates the resource usage becomes to be critical
+ but are still acceptable. The error level indicates the resource usage is now
+ critical for the overall system and actions should be taken.
+ </p><p>
+ A Resource Listener is registered with these two mandatory properties:
+ </p><ul>
+ <li>{@link #RESOURCE_CONTEXT} which defines the ResourceContext associated to
+ this Listener</li>
+ <li>{@link #RESOURCE_TYPE} which the type of resource</li>
+ </ul>
+ The next optional properties are used to specify threshold values. A
+ ResourceListener must at least provides one of them:
+ <ul>
+ <li>{@link ResourceListener#UPPER_WARNING_THRESHOLD}</li>
+ <li>{@link ResourceListener#UPPER_ERROR_THRESHOLD}</li>
+ <li>{@link ResourceListener#LOWER_WARNING_THRESHOLD}</li>
+ <li>{@link ResourceListener#LOWER_ERROR_THRESHOLD}</li>
+ </ul>
+ These threshold values can also be retrieved through methods.
+ <p>
+ Resource Listeners are associated to a Resource Context and a Resource
+ Monitor based on the {@link #RESOURCE_CONTEXT} property and the
+ {@link #RESOURCE_TYPE} property (both of them are mandatory at registration
+ time).
+ </p><p>
+ Once associated, the ResourceMonitor gets the threshold values through the
+ service properties (i.e {@link #UPPER_WARNING_THRESHOLD},
+ {@link #UPPER_ERROR_THRESHOLD}, {@link #LOWER_WARNING_THRESHOLD} and
+ {@link #LOWER_WARNING_THRESHOLD}) and store them. Once it detects a new
+ resource consumption, it compares the new resource usage value with the
+ thresholds provided by the Resource Listener. If the resource usage violates
+ one of these thresholds, the Resource Monitor notifies the
+ {@link ResourceListener} through a call to {@link #notify(ResourceEvent)}.
+ </p><p>
+ A ResourceMonitor tracks threshold value modification by using a
+ {@link ServiceListener}.</p>
+   </description>
+<version>@version 1.0</version><author>@author $Id: 1c29e2896b94e38e03e8daf5ada29b7441caea96 $</author><param name='&lt;T&gt;'>The type for the Resource.</param>
+
+    <method name='notify' fqn='org.osgi.service.resourcemonitoring.ResourceListener.notify' qn='ResourceListener.notify(ResourceEvent)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='(org.osgi.service.resourcemonitoring.ResourceEvent&lt;T&gt;)' flatSignature='(ResourceEvent)'>
+   <lead>
+Receives a resource monitoring notification
+   </lead>
+   <description>
+Receives a resource monitoring notification
+   </description>
+
+<param name='event'>The {@link ResourceEvent} object</param>
+
+
+
+
+    <parameter name='event' dimension='' typeName='ResourceEvent&lt;T&gt;' fqn='org.osgi.service.resourcemonitoring.ResourceEvent' varargs='false'/>
+     </method>
+    <method name='getLowerWarningThreshold' fqn='org.osgi.service.resourcemonitoring.ResourceListener.getLowerWarningThreshold' qn='ResourceListener.getLowerWarningThreshold()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='Comparable&lt;T&gt;' qualifiedTypeName='java.lang.Comparable' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Retrieves the lower warning threshold value set by the listener.
+   </lead>
+   <description>
+Retrieves the lower warning threshold value set by the listener. If the
+ resource usage decreases under this threshold value, the
+ {@link #notify(ResourceEvent)} will be called. The provided ResourceEvent
+ then indicates the WARNING state is reached.
+   </description>
+
+
+<return>a comparable object or null if no threshold is set.</return>
+
+
+
+     </method>
+    <method name='getLowerErrorThreshold' fqn='org.osgi.service.resourcemonitoring.ResourceListener.getLowerErrorThreshold' qn='ResourceListener.getLowerErrorThreshold()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='Comparable&lt;T&gt;' qualifiedTypeName='java.lang.Comparable' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Retrieves the lower error threshold value set by the listener.
+   </lead>
+   <description>
+Retrieves the lower error threshold value set by the listener. If the
+ resource usage decreases under this threshold, the
+ {@link #notify(ResourceEvent)} will be called. The provided
+ {@link ResourceEvent} then indicates the ERROR state is reached.
+   </description>
+
+
+<return>a comparable object or null if no threshold is set.</return>
+
+
+
+     </method>
+    <method name='getUpperWarningThreshold' fqn='org.osgi.service.resourcemonitoring.ResourceListener.getUpperWarningThreshold' qn='ResourceListener.getUpperWarningThreshold()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='Comparable&lt;T&gt;' qualifiedTypeName='java.lang.Comparable' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Retrieves the upper warning threshold value set by this listener.
+   </lead>
+   <description>
+Retrieves the upper warning threshold value set by this listener. If the
+ resource usage exceeds this threshold, the {@link #notify(ResourceEvent)}
+ method will be called. The provided {@link ResourceEvent} then indicates
+ the WARNING state is reached.
+   </description>
+
+
+<return>a comparable object or null if no threshold is reached.</return>
+
+
+
+     </method>
+    <method name='getUpperErrorThreshold' fqn='org.osgi.service.resourcemonitoring.ResourceListener.getUpperErrorThreshold' qn='ResourceListener.getUpperErrorThreshold()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='Comparable&lt;T&gt;' qualifiedTypeName='java.lang.Comparable' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Retrieves the upper error threshold value set by this listener.
+   </lead>
+   <description>
+Retrieves the upper error threshold value set by this listener. If the
+ resource usage exceeds this threshold, the {@link #notify(ResourceEvent)}
+ will be called. The provided {@link ResourceEvent} then indicates the
+ ERROR state is reached.
+   </description>
+
+
+<return>a comparable object or null if no threshold is reached.</return>
+
+
+
+     </method>
+    <field name='RESOURCE_CONTEXT' fqn='org.osgi.service.resourcemonitoring.ResourceListener.RESOURCE_CONTEXT' qn='ResourceListener.RESOURCE_CONTEXT' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"resource.context"'>
+   <lead>
+Mandatory property specifying the Resource Context associated with the
+ listener.
+   </lead>
+   <description>
+Mandatory property specifying the Resource Context associated with the
+ listener.
+   </description>
+
+     </field>
+    <field name='RESOURCE_TYPE' fqn='org.osgi.service.resourcemonitoring.ResourceListener.RESOURCE_TYPE' qn='ResourceListener.RESOURCE_TYPE' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"resource.type"'>
+   <lead>
+Mandatory property defining the type of Resource (i.e the
+ ResourceMonitor) associated to this Listener.
+   </lead>
+   <description>
+Mandatory property defining the type of Resource (i.e the
+ ResourceMonitor) associated to this Listener.
+   </description>
+
+     </field>
+    <field name='UPPER_WARNING_THRESHOLD' fqn='org.osgi.service.resourcemonitoring.ResourceListener.UPPER_WARNING_THRESHOLD' qn='ResourceListener.UPPER_WARNING_THRESHOLD' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"upper.warning.threshold"'>
+   <lead>
+Optional property defining the value of the upper warning threshold.
+   </lead>
+   <description>
+Optional property defining the value of the upper warning threshold.
+   </description>
+
+     </field>
+    <field name='UPPER_ERROR_THRESHOLD' fqn='org.osgi.service.resourcemonitoring.ResourceListener.UPPER_ERROR_THRESHOLD' qn='ResourceListener.UPPER_ERROR_THRESHOLD' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"upper.error.threshold"'>
+   <lead>
+Optional property defining the value of the upper error threshold.
+   </lead>
+   <description>
+Optional property defining the value of the upper error threshold.
+   </description>
+
+     </field>
+    <field name='LOWER_WARNING_THRESHOLD' fqn='org.osgi.service.resourcemonitoring.ResourceListener.LOWER_WARNING_THRESHOLD' qn='ResourceListener.LOWER_WARNING_THRESHOLD' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"lower.warning.threshold"'>
+   <lead>
+Optional property defining the value of the lower warning threshold.
+   </lead>
+   <description>
+Optional property defining the value of the lower warning threshold.
+   </description>
+
+     </field>
+    <field name='LOWER_ERROR_THRESHOLD' fqn='org.osgi.service.resourcemonitoring.ResourceListener.LOWER_ERROR_THRESHOLD' qn='ResourceListener.LOWER_ERROR_THRESHOLD' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"lower.error.threshold"'>
+   <lead>
+Optional property defining the value of the lower error threshold.
+   </lead>
+   <description>
+Optional property defining the value of the lower error threshold.
+   </description>
+
+     </field>
+  </class>
+  <class name='ResourceMonitor' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor' qn='ResourceMonitor' package='org.osgi.service.resourcemonitoring' typeParam='&lt;T&gt;' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+   <lead>
+Representation of the state of a resource for a resource context.
+   </lead>
+   <description>
+Representation of the state of a resource for a resource context.
+ <p>
+ ResourceMonitor objects are returned by the
+ {@link ResourceContext#getMonitor(String)} method.
+ </p><p>
+ The <code>ResourceMonitor</code> object may be used to:
+ </p><ul>
+ <li>Enable/Disable the monitoring of the corresponding resource type for the
+ corresponding resource context</li>
+ <li>View the current usage of the resource by this resource context</li>
+ </ul>
+ 
+ <p>
+ A resource monitor can have a sampling period, a monitored period, or both.
+ For example, for CPU monitoring, the resource monitor implementation can get
+ the CPU usage of the running threads once per minute, and calculate the CPU
+ usage per context in percentages based on the last ten such measurements.
+ This could make a 60 000 milliseconds sampling period, and a 600 000
+ milliseconds monitored period.</p>
+   </description>
+<version>@version 1.0</version><author>@author $Id: a14e7778bc89b62e0054d0d8ea801452a7270389 $</author><param name='&lt;T&gt;'>The type for the Resource.</param>
+
+    <method name='getContext' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.getContext' qn='ResourceMonitor.getContext()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='ResourceContext' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceContext' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the resource context that this monitor belongs to
+   </lead>
+   <description>
+Returns the resource context that this monitor belongs to
+   </description>
+
+
+<return>The associated {@link ResourceContext}</return>
+
+
+
+     </method>
+    <method name='getResourceType' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.getResourceType' qn='ResourceMonitor.getResourceType()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='String' qualifiedTypeName='java.lang.String' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+The name of the resource type that this monitor represents
+   </lead>
+   <description>
+The name of the resource type that this monitor represents
+   </description>
+
+
+<return>The name of the monitored resource type</return>
+
+
+
+     </method>
+    <method name='delete' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.delete' qn='ResourceMonitor.delete()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Disable and delete this instance of Resource Monitor.
+   </lead>
+   <description>
+Disable and delete this instance of Resource Monitor. This method MUST
+ update the list of ResourceMonitor instances hold by the Resource Context
+ (getContext().removeMonitor(this)).
+   </description>
+
+
+
+<throws name='ResourceMonitorException'>For example, when the monitor can't be
+         removed from the ResourceContext.</throws>
+
+
+<exception name='ResourceMonitorException' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorException'/>
+     </method>
+    <method name='isEnabled' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.isEnabled' qn='ResourceMonitor.isEnabled()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='boolean' qualifiedTypeName='boolean' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Checks if the monitoring for this resource type is enabled for this
+ resource context
+   </lead>
+   <description>
+Checks if the monitoring for this resource type is enabled for this
+ resource context
+   </description>
+
+
+<return><code>true</code> if monitoring for this resource type is enabled
+         for this context, <code>false</code> otherwise</return>
+
+
+
+     </method>
+    <method name='isDeleted' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.isDeleted' qn='ResourceMonitor.isDeleted()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='boolean' qualifiedTypeName='boolean' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns true if the ResourceMonitor instance has been deleted, that is the
+ {@link #delete()} method has been called previously.
+   </lead>
+   <description>
+Returns true if the ResourceMonitor instance has been deleted, that is the
+ {@link #delete()} method has been called previously.
+   </description>
+
+
+<return>true if deleted.</return>
+
+
+
+     </method>
+    <method name='enable' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.enable' qn='ResourceMonitor.enable()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Enable the monitoring of this resource type for the resource context
+ associated with this monitor instance.
+   </lead>
+   <description>
+Enable the monitoring of this resource type for the resource context
+ associated with this monitor instance. This method SHOULD also update the
+ current resource consumption value (to take into account all previous
+ resource allocations and releases occurred during the time the monitor
+ was disabled).
+   </description>
+
+
+
+<throws name='ResourceMonitorException'>if the ResourceMonitor instance can not
+         be enabled (for example, some MemoryMonitor implementations
+         evaluate the memory consumption by tracking memory allocation
+         operation at runtime. This kind of Monitor can not get
+         instantaneous memory value. Such Monitor instances need to be
+         enabled at starting time.). if the ResourceMonitor instance has
+         been previously deleted</throws>
+
+
+<exception name='ResourceMonitorException' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorException'/>
+     </method>
+    <method name='disable' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.disable' qn='ResourceMonitor.disable()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='void' qualifiedTypeName='void' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Disable the monitoring of this resource type for the resource context
+ associated with this monitor instance.
+   </lead>
+   <description>
+Disable the monitoring of this resource type for the resource context
+ associated with this monitor instance. The resource usage is not
+ available until it is enabled again.
+   </description>
+
+
+
+<throws name='ResourceMonitorException'>if the ResourceMonitor instance has been
+         previously deleted</throws>
+
+
+<exception name='ResourceMonitorException' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorException'/>
+     </method>
+    <method name='getUsage' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.getUsage' qn='ResourceMonitor.getUsage()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='Comparable&lt;T&gt;' qualifiedTypeName='java.lang.Comparable' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns an object representing the current usage of this resource type by
+ this resource context.
+   </lead>
+   <description>
+Returns an object representing the current usage of this resource type by
+ this resource context.
+   </description>
+
+
+<return>The current usage of this resource type.</return>
+
+<throws name='ResourceMonitorException'>if the ResourceMonitor instance is not
+         enabled.</throws>
+
+
+<exception name='ResourceMonitorException' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorException'/>
+     </method>
+    <method name='getSamplingPeriod' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.getSamplingPeriod' qn='ResourceMonitor.getSamplingPeriod()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='long' qualifiedTypeName='long' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the sampling period for this resource type.
+   </lead>
+   <description>
+Returns the sampling period for this resource type.
+   </description>
+
+
+<return>The sampling period in milliseconds, or <code>-1</code> if a
+         sampling period is not relevant for this resource type.</return>
+
+
+
+     </method>
+    <method name='getMonitoredPeriod' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.getMonitoredPeriod' qn='ResourceMonitor.getMonitoredPeriod()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='long' qualifiedTypeName='long' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the time period for which the usage of this resource type is
+ monitored.
+   </lead>
+   <description>
+Returns the time period for which the usage of this resource type is
+ monitored.
+   </description>
+
+
+<return>The monitored period in milliseconds, or <code>-1</code> if a
+         monitored period is not relevant for this resource type.</return>
+
+
+
+     </method>
+    <method name='equals' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.equals' qn='ResourceMonitor.equals(Object)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='boolean' qualifiedTypeName='boolean' typeArgs='' dimension='' signature='(java.lang.Object)' flatSignature='(Object)'>
+<java.lang.Override></java.lang.Override>
+   <lead>
+Checks if resourceMonitor is equals to the current instance.
+   </lead>
+   <description>
+Checks if resourceMonitor is equals to the current instance. A
+ ResourceMonitor rm1 is equals to a ResourceMonitor rm2 if
+ rm1.getContext().equals(rm2.getContext()) and
+ r1.getType().equals(rm2.getType()).
+   </description>
+
+<param name='resourceMonitor'/>
+
+<return>true if the current instance is equals to the provided
+         resourceMonitor</return>
+
+
+
+    <parameter name='resourceMonitor' dimension='' typeName='Object' fqn='java.lang.Object' varargs='false'/>
+     </method>
+    <method name='hashCode' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor.hashCode' qn='ResourceMonitor.hashCode()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='int' qualifiedTypeName='int' typeArgs='' dimension='' signature='()' flatSignature='()'>
+<java.lang.Override></java.lang.Override>
+   <lead>
+Retrieves the hashCode value of this ResourceMonitor.
+   </lead>
+   <description>
+Retrieves the hashCode value of this ResourceMonitor. The hashCode value
+ is based on the hashCode value of the associated ResourceContext and the
+ hashCode value of the type.
+   </description>
+
+
+<return>hashcode</return>
+
+
+
+     </method>
+  </class>
+  <class name='ResourceMonitorException' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorException' qn='ResourceMonitorException' package='org.osgi.service.resourcemonitoring' typeParam='' modifiers='public class' superclass='Exception' kind='CLASS'>
+   <lead>
+Resource Monitor Exception reports an invalid usage of a monitor.
+   </lead>
+   <description>
+Resource Monitor Exception reports an invalid usage of a monitor.
+   </description>
+<version>@version 1.0</version><author>@author $Id: 2bb50571973d6832518f3c8a50a96a37dbf85f20 $</author>
+    <method name='ResourceMonitorException' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorException.ResourceMonitorException' qn='ResourceMonitorException.ResourceMonitorException(String)' package='org.osgi.service.resourcemonitoring' typeArgs='' modifiers='public' signature='(java.lang.String)' flatSignature='(String)' isConstructor='true'>
+   <lead>
+Create a new ResourceMonitorException
+   </lead>
+   <description>
+Create a new ResourceMonitorException
+   </description>
+
+<param name='msg'>message</param>
+
+
+
+
+    <parameter name='msg' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+     </method>
+    <method name='ResourceMonitorException' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorException.ResourceMonitorException' qn='ResourceMonitorException.ResourceMonitorException(String,Throwable)' package='org.osgi.service.resourcemonitoring' typeArgs='' modifiers='public' signature='(java.lang.String,java.lang.Throwable)' flatSignature='(String,Throwable)' isConstructor='true'>
+   <lead>
+Create a new ResourceMonitorException
+   </lead>
+   <description>
+Create a new ResourceMonitorException
+   </description>
+
+<param name='msg'>message</param>
+<param name='t'/>
+
+
+
+
+    <parameter name='msg' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+    <parameter name='t' dimension='' typeName='Throwable' fqn='java.lang.Throwable' varargs='false'/>
+     </method>
+  </class>
+  <class name='ResourceMonitorFactory' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorFactory' qn='ResourceMonitorFactory' package='org.osgi.service.resourcemonitoring' typeParam='&lt;T&gt;' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+   <lead>
+A Resource Monitor Factory is a service that provides Resource Monitor
+ instances of a specific resource type (for example, CPUMonitor, MemoryMonitor...)
+ for every Resource Context.
+   </lead>
+   <description>
+A Resource Monitor Factory is a service that provides Resource Monitor
+ instances of a specific resource type (for example, CPUMonitor, MemoryMonitor...)
+ for every Resource Context.
+ 
+ Every Resource Monitor Factory service is registered with the
+ {@link #RESOURCE_TYPE_PROPERTY} mandatory property. This property indicates
+ which type of Resource Monitor a Resource Monitor Factory is able to create.
+ The type can also be retrieved through a call to {@link #getType()}. The type
+ MUST be unique (two Resource Monitor Factory instances MUST not have the same
+ type).
+   </description>
+<version>@version 1.0</version><author>@author $Id: 18d6e38893b8bef39ab3658af7635d997d4c7e4c $</author><param name='&lt;T&gt;'>The type for the Resource.</param>
+
+    <method name='getType' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorFactory.getType' qn='ResourceMonitorFactory.getType()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='String' qualifiedTypeName='java.lang.String' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the type of ResourceMonitor instance this factory is able to
+ create.
+   </lead>
+   <description>
+Returns the type of ResourceMonitor instance this factory is able to
+ create.
+   </description>
+
+
+<return>factory type</return>
+
+
+
+     </method>
+    <method name='createResourceMonitor' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorFactory.createResourceMonitor' qn='ResourceMonitorFactory.createResourceMonitor(ResourceContext)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='ResourceMonitor&lt;T&gt;' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceMonitor' typeArgs='' dimension='' signature='(org.osgi.service.resourcemonitoring.ResourceContext)' flatSignature='(ResourceContext)'>
+   <lead>
+Creates a new ResourceMonitor instance.
+   </lead>
+   <description>
+Creates a new ResourceMonitor instance. This instance is associated with
+ the ResourceContext instance provided as argument (
+ {@link ResourceContext#addResourceMonitor(ResourceMonitor)} is called by
+ the factory). The newly ResourceMonitor instance is disabled. It can be
+ enabled by calling {@link ResourceMonitor#enable()}.
+   </description>
+
+<param name='resourceContext'>ResourceContext instance associated with the newly
+        created ResourceMonitor instance</param>
+
+<return>a ResourceMonitor instance</return>
+
+<throws name='ResourceMonitorException'>If the factory is unable to create a
+         ResourceMonitor For example, when a ResourceMonitor of this type
+         already exists for this ResourceContext</throws>
+
+
+    <parameter name='resourceContext' dimension='' typeName='ResourceContext' fqn='org.osgi.service.resourcemonitoring.ResourceContext' varargs='false'/>
+<exception name='ResourceMonitorException' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorException'/>
+     </method>
+    <field name='RESOURCE_TYPE_PROPERTY' fqn='org.osgi.service.resourcemonitoring.ResourceMonitorFactory.RESOURCE_TYPE_PROPERTY' qn='ResourceMonitorFactory.RESOURCE_TYPE_PROPERTY' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"org.osgi.resourcemonitoring.ResourceType"'>
+   <lead>
+Resource type property.
+   </lead>
+   <description>
+Resource type property. The value is of type {@link String}. For example,
+ {@link ResourceMonitoringService#RES_TYPE_CPU}
+   </description>
+
+     </field>
+  </class>
+  <class name='ResourceMonitoringService' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService' qn='ResourceMonitoringService' package='org.osgi.service.resourcemonitoring' typeParam='' modifiers='public abstract' interface='yes' kind='INTERFACE'>
+   <lead>
+It manages the Resource Context instances.
+   </lead>
+   <description>
+It manages the Resource Context instances. It is available through the OSGi
+ service registry.
+ 
+ This service holds the existing Resource Context instances. Resource Context
+ instances are created by calling the
+ {@link #createContext(String, ResourceContext)} method.
+   </description>
+<version>@version 1.0</version><author>@author $Id: 71758040cb5746f9763dc3421f177c6009532a8c $</author>
+    <method name='listContext' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.listContext' qn='ResourceMonitoringService.listContext()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='ResourceContext[]' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceContext[]' typeArgs='' dimension='[]' signature='()' flatSignature='()'>
+   <lead>
+Lists all available {@link ResourceContext resource contexts}.
+   </lead>
+   <description>
+Lists all available {@link ResourceContext resource contexts}. The list
+ will contain the special {@link #FRAMEWORK_CONTEXT_NAME} context and the
+ {@link #SYSTEM_CONTEXT_NAME} context, if it is supported.
+   </description>
+
+
+<return>An array of {@link ResourceContext} objects, or an empty array,
+         if no contexts have been created.</return>
+
+
+
+     </method>
+    <method name='createContext' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.createContext' qn='ResourceMonitoringService.createContext(String,ResourceContext)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='ResourceContext' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceContext' typeArgs='' dimension='' signature='(java.lang.String,org.osgi.service.resourcemonitoring.ResourceContext)' flatSignature='(String,ResourceContext)'>
+   <lead>
+Creates a new {@link ResourceContext}.
+   </lead>
+   <description>
+Creates a new {@link ResourceContext}.
+ <p>
+ A {@link ResourceContextEvent} with type
+ {@link ResourceContextEvent#RESOURCE_CONTEXT_CREATED} will be sent.</p>
+   </description>
+
+<param name='name'>The name identifying the context. Names must be unique within
+        the framework instance.</param>
+<param name='template'>If a template is provided, the new resource context will
+        inherit all resource monitoring settings (enabled monitors,
+        thresholds) from the template.</param>
+
+<return>A new {@link ResourceContext} instance.</return>
+
+<throws name='IllegalArgumentException'>if a problem occurred, for example if the name
+         is already used.</throws>
+
+
+    <parameter name='name' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+    <parameter name='template' dimension='' typeName='ResourceContext' fqn='org.osgi.service.resourcemonitoring.ResourceContext' varargs='false'/>
+     </method>
+    <method name='getContext' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.getContext' qn='ResourceMonitoringService.getContext(String)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='ResourceContext' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceContext' typeArgs='' dimension='' signature='(java.lang.String)' flatSignature='(String)'>
+   <lead>
+Returns the context with the specified resource context name.
+   </lead>
+   <description>
+Returns the context with the specified resource context name.
+   </description>
+
+<param name='name'>The resource context name</param>
+
+<return>An existing {@link ResourceContext} with the specified name, or
+         null if such a context doesn't exist</return>
+
+
+
+    <parameter name='name' dimension='' typeName='String' fqn='java.lang.String' varargs='false'/>
+     </method>
+    <method name='getContext' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.getContext' qn='ResourceMonitoringService.getContext(long)' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='ResourceContext' qualifiedTypeName='org.osgi.service.resourcemonitoring.ResourceContext' typeArgs='' dimension='' signature='(long)' flatSignature='(long)'>
+   <lead>
+Returns the {@link ResourceContext} associated to the provided bundle id.
+   </lead>
+   <description>
+Returns the {@link ResourceContext} associated to the provided bundle id.
+   </description>
+
+<param name='bundleId'>bundle identifier</param>
+
+<return>the {@link ResourceContext} associated to bundle b or null if the
+         bundle b does not belong to a Resource Context.</return>
+
+
+
+    <parameter name='bundleId' dimension='' typeName='long' fqn='long' varargs='false'/>
+     </method>
+    <method name='getSupportedTypes' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.getSupportedTypes' qn='ResourceMonitoringService.getSupportedTypes()' package='org.osgi.service.resourcemonitoring' modifiers='public abstract' typeName='String[]' qualifiedTypeName='java.lang.String[]' typeArgs='' dimension='[]' signature='()' flatSignature='()'>
+   <lead>
+Returns a list with the supported resource type names.
+   </lead>
+   <description>
+Returns a list with the supported resource type names.
+   </description>
+
+
+<return>An array containing the names of all resource types that this
+         {@link ResourceMonitoringService} implementation supports.</return>
+
+
+
+     </method>
+    <field name='RES_TYPE_THREADS' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.RES_TYPE_THREADS' qn='ResourceMonitoringService.RES_TYPE_THREADS' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"resource.type.threads"'>
+   <lead>
+The name of the threads resource type, used to monitor and control the
+ number of threads created by a resource context.
+   </lead>
+   <description>
+The name of the threads resource type, used to monitor and control the
+ number of threads created by a resource context.
+ {@link ResourceMonitoringService} implementations must create
+ {@link ThreadMonitor} instances for this resource type.
+   </description>
+
+     </field>
+    <field name='RES_TYPE_CPU' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.RES_TYPE_CPU' qn='ResourceMonitoringService.RES_TYPE_CPU' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"resource.type.cpu"'>
+   <lead>
+The name of the CPU resource type, used to monitor and control the CPU
+ time used by a resource context.
+   </lead>
+   <description>
+The name of the CPU resource type, used to monitor and control the CPU
+ time used by a resource context. {@link ResourceMonitoringService}
+ implementations must create {@link CPUMonitor} instances for this
+ resource type.
+   </description>
+
+     </field>
+    <field name='RES_TYPE_DISK_STORAGE' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.RES_TYPE_DISK_STORAGE' qn='ResourceMonitoringService.RES_TYPE_DISK_STORAGE' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"resource.type.disk.storage"'>
+   <lead>
+The name of the disk storage resource type, used to monitor and control
+ the size of the persistent storage used by a resource context.
+   </lead>
+   <description>
+The name of the disk storage resource type, used to monitor and control
+ the size of the persistent storage used by a resource context.
+ {@link ResourceMonitoringService} implementations must create
+ {@link DiskStorageMonitor} instances for this resource type.
+   </description>
+
+     </field>
+    <field name='RES_TYPE_MEMORY' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.RES_TYPE_MEMORY' qn='ResourceMonitoringService.RES_TYPE_MEMORY' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"resource.type.memory"'>
+   <lead>
+The name of the memory resource type, used to monitor and control the
+ size of the java heap used by a resource context.
+   </lead>
+   <description>
+The name of the memory resource type, used to monitor and control the
+ size of the java heap used by a resource context.
+ {@link ResourceMonitoringService} implementations must create
+ {@link MemoryMonitor} instances for this resource type.
+   </description>
+
+     </field>
+    <field name='RES_TYPE_SOCKET' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.RES_TYPE_SOCKET' qn='ResourceMonitoringService.RES_TYPE_SOCKET' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"resource.type.socket"'>
+   <lead>
+The name of the socket resource type, used to monitor and control the
+ number of existing sockets used by a resource context.
+   </lead>
+   <description>
+The name of the socket resource type, used to monitor and control the
+ number of existing sockets used by a resource context.
+ {@link ResourceMonitoringService} implementations must create
+ {@link SocketMonitor} instances for this resource type.
+   </description>
+
+     </field>
+    <field name='FRAMEWORK_CONTEXT_NAME' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.FRAMEWORK_CONTEXT_NAME' qn='ResourceMonitoringService.FRAMEWORK_CONTEXT_NAME' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"framework"'>
+   <lead>
+The name of the special, optional resource context, representing the
+ whole OSGi framework.
+   </lead>
+   <description>
+The name of the special, optional resource context, representing the
+ whole OSGi framework.
+   </description>
+
+     </field>
+    <field name='SYSTEM_CONTEXT_NAME' fqn='org.osgi.service.resourcemonitoring.ResourceMonitoringService.SYSTEM_CONTEXT_NAME' qn='ResourceMonitoringService.SYSTEM_CONTEXT_NAME' package='org.osgi.service.resourcemonitoring' modifiers='public static final' typeName='String' qualifiedTypeName='java.lang.String' dimension='' constantValue='"system"'>
+   <lead>
+The name of the Resource Context associated with System bundle (bundle
+ 0).
+   </lead>
+   <description>
+The name of the Resource Context associated with System bundle (bundle
+ 0).
+   </description>
+
+     </field>
+  </class>
+  </package>
+  <package name='org.osgi.service.resourcemonitoring.monitor' fqn='org.osgi.service.resourcemonitoring.monitor' qn='org.osgi.service.resourcemonitoring.monitor'>
+<org.osgi.annotation.versioning.Version><value>1.0</value>
+</org.osgi.annotation.versioning.Version>
+   <lead>
+Resource Monitoring Monitor Package Version 1.0.
+   </lead>
+   <description>
+Resource Monitoring Monitor Package Version 1.0.
+
+ <p>
+ Bundles wishing to use this package must list the package in the
+ Import-Package header of the bundle's manifest. This package has two types of
+ users: the consumers that use the API in this package and the providers that
+ implement the API in this package.
+
+ </p><p>
+ Example import for consumers using the API in this package:
+ </p><p>
+ {@code  Import-Package: org.osgi.service.resourcemonitoring.monitor; version="[1.0,2.0)"}
+ </p><p>
+ Example import for providers implementing the API in this package:
+ </p><p>
+ {@code  Import-Package: org.osgi.service.resourcemonitoring.monitor; version="[1.0,1.1)"}</p>
+   </description>
+<author>@author $Id: ea78115067cd606b9f936ad0f4aff75b6c35e7fd $</author>
+  <class name='CPUMonitor' fqn='org.osgi.service.resourcemonitoring.monitor.CPUMonitor' qn='CPUMonitor' package='org.osgi.service.resourcemonitoring.monitor' typeParam='' modifiers='public abstract' superclass='ResourceMonitor&lt;Long&gt;' interface='yes' kind='INTERFACE'>
+   <lead>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_CPU} resource type.
+   </lead>
+   <description>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_CPU} resource type. CPUMonitor
+ instance monitors the CPU consumed by a {@link ResourceContext} instance.
+   </description>
+<version>@version 1.0</version><author>@author $Id: 6b91995460f86fe796787e76546ace777fc62bff $</author>
+<implements name='ResourceMonitor&lt;Long&gt;' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor' qn='ResourceMonitor&lt;Long&gt;' package='org.osgi.service.resourcemonitoring' local='org.osgi.service.resourcemonitoring.monitor.CPUMonitor'/>
+    <method name='getCPUUsage' fqn='org.osgi.service.resourcemonitoring.monitor.CPUMonitor.getCPUUsage' qn='CPUMonitor.getCPUUsage()' package='org.osgi.service.resourcemonitoring.monitor' modifiers='public abstract' typeName='long' qualifiedTypeName='long' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the CPU usage as a cumulative number of nanoseconds
+   </lead>
+   <description>
+Returns the CPU usage as a cumulative number of nanoseconds
+ <p>
+ The {@link #getUsage()} method returns the same value, wrapped in a long.</p>
+   </description>
+
+
+<return>the CPU usage in nanoseconds</return>
+
+
+
+     </method>
+  </class>
+  <class name='DiskStorageMonitor' fqn='org.osgi.service.resourcemonitoring.monitor.DiskStorageMonitor' qn='DiskStorageMonitor' package='org.osgi.service.resourcemonitoring.monitor' typeParam='' modifiers='public abstract' superclass='ResourceMonitor&lt;Long&gt;' interface='yes' kind='INTERFACE'>
+   <lead>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_DISK_STORAGE} resource type.
+   </lead>
+   <description>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_DISK_STORAGE} resource type. A
+ DiskStorageMonitor instance monitors and limits the persistent storage of the
+ bundle belonging to the {@link ResourceContext}
+   </description>
+<version>@version 1.0</version><author>@author $Id: 503c6bd306ddb27d34644b471b35ba953d8f7437 $</author>
+<implements name='ResourceMonitor&lt;Long&gt;' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor' qn='ResourceMonitor&lt;Long&gt;' package='org.osgi.service.resourcemonitoring' local='org.osgi.service.resourcemonitoring.monitor.DiskStorageMonitor'/>
+    <method name='getUsedDiskStorage' fqn='org.osgi.service.resourcemonitoring.monitor.DiskStorageMonitor.getUsedDiskStorage' qn='DiskStorageMonitor.getUsedDiskStorage()' package='org.osgi.service.resourcemonitoring.monitor' modifiers='public abstract' typeName='long' qualifiedTypeName='long' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the sum of the size of the persistent storage areas of the
+ bundles in this resource context.
+   </lead>
+   <description>
+Returns the sum of the size of the persistent storage areas of the
+ bundles in this resource context.
+ <p>
+ The {@link #getUsage()} method returns the same value, wrapped in a long.</p>
+   </description>
+
+
+<return>the sum of the sizes of the persistent storage areas in bytes</return>
+
+
+
+     </method>
+  </class>
+  <class name='MemoryMonitor' fqn='org.osgi.service.resourcemonitoring.monitor.MemoryMonitor' qn='MemoryMonitor' package='org.osgi.service.resourcemonitoring.monitor' typeParam='' modifiers='public abstract' superclass='ResourceMonitor&lt;Long&gt;' interface='yes' kind='INTERFACE'>
+   <lead>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_MEMORY} resource type.
+   </lead>
+   <description>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_MEMORY} resource type. A
+ MemoryMonitor instance monitors and limits the memory used by a
+ {@link ResourceContext} instance.
+   </description>
+<version>@version 1.0</version><author>@author $Id: a3444aabb30bc1fe153df23d964ab43fc1076579 $</author>
+<implements name='ResourceMonitor&lt;Long&gt;' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor' qn='ResourceMonitor&lt;Long&gt;' package='org.osgi.service.resourcemonitoring' local='org.osgi.service.resourcemonitoring.monitor.MemoryMonitor'/>
+    <method name='getMemoryUsage' fqn='org.osgi.service.resourcemonitoring.monitor.MemoryMonitor.getMemoryUsage' qn='MemoryMonitor.getMemoryUsage()' package='org.osgi.service.resourcemonitoring.monitor' modifiers='public abstract' typeName='long' qualifiedTypeName='long' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the size of the java heap used by the bundles in this resource
+ context.
+   </lead>
+   <description>
+Returns the size of the java heap used by the bundles in this resource
+ context.
+ <p>
+ The {@link #getUsage()} method returns the same value, wrapped in a long.</p>
+   </description>
+
+
+<return>the size of the used java heap in bytes</return>
+
+
+
+     </method>
+  </class>
+  <class name='SocketMonitor' fqn='org.osgi.service.resourcemonitoring.monitor.SocketMonitor' qn='SocketMonitor' package='org.osgi.service.resourcemonitoring.monitor' typeParam='' modifiers='public abstract' superclass='ResourceMonitor&lt;Long&gt;' interface='yes' kind='INTERFACE'>
+   <lead>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_SOCKET} resource type.
+   </lead>
+   <description>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_SOCKET} resource type.
+ {@link SocketMonitor} instance are used to monitor and limit the number of
+ in-use sockets per {@link ResourceContext} instance. {@link SocketMonitor}
+ instance handle all types of sockets (TCP, UDP, ...).
+ <p>
+ A TCP socket is considered to be in-use when it is bound (
+ {@link Socket#bind(java.net.SocketAddress)}) or when it is connected (
+ {@link Socket#connect(java.net.SocketAddress)}). It leaves the in-use state
+ when the socket is closed ({@link Socket#close()}). *
+ </p><p>
+ A UDP socket is in-use when it is bound (
+ {@link DatagramSocket#bind(java.net.SocketAddress)}) or connected (
+ {@link DatagramSocket#connect(java.net.SocketAddress)}). A UDP Socket leaves
+ the in-use state when it is closed ({@link DatagramSocket#close()}).</p>
+   </description>
+<version>@version 1.0</version><author>@author $Id: 8fec9cff490b0b56ac7afd8e8507a0b911e65758 $</author>
+<implements name='ResourceMonitor&lt;Long&gt;' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor' qn='ResourceMonitor&lt;Long&gt;' package='org.osgi.service.resourcemonitoring' local='org.osgi.service.resourcemonitoring.monitor.SocketMonitor'/>
+    <method name='getSocketUsage' fqn='org.osgi.service.resourcemonitoring.monitor.SocketMonitor.getSocketUsage' qn='SocketMonitor.getSocketUsage()' package='org.osgi.service.resourcemonitoring.monitor' modifiers='public abstract' typeName='long' qualifiedTypeName='long' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the number of existing socket created by a
+ {@link ResourceContext}.
+   </lead>
+   <description>
+Returns the number of existing socket created by a
+ {@link ResourceContext}.
+ <p>
+ The {@link #getUsage()} method returns the same value, wrapped in a long.</p>
+   </description>
+
+
+<return>the number of existing socket.</return>
+
+
+
+     </method>
+  </class>
+  <class name='ThreadMonitor' fqn='org.osgi.service.resourcemonitoring.monitor.ThreadMonitor' qn='ThreadMonitor' package='org.osgi.service.resourcemonitoring.monitor' typeParam='' modifiers='public abstract' superclass='ResourceMonitor&lt;Integer&gt;' interface='yes' kind='INTERFACE'>
+   <lead>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_THREADS} resource type.
+   </lead>
+   <description>
+A {@link ResourceMonitor} for the
+ {@link ResourceMonitoringService#RES_TYPE_THREADS} resource type. A
+ ThreadMonitor instance monitors and limits the thread created by a
+ {@link ResourceContext} instance.
+   </description>
+<version>@version 1.0</version><author>@author $Id: b5d1a7049fd928b82a428aa1d23de201b243a506 $</author>
+<implements name='ResourceMonitor&lt;Integer&gt;' fqn='org.osgi.service.resourcemonitoring.ResourceMonitor' qn='ResourceMonitor&lt;Integer&gt;' package='org.osgi.service.resourcemonitoring' local='org.osgi.service.resourcemonitoring.monitor.ThreadMonitor'/>
+    <method name='getAliveThreads' fqn='org.osgi.service.resourcemonitoring.monitor.ThreadMonitor.getAliveThreads' qn='ThreadMonitor.getAliveThreads()' package='org.osgi.service.resourcemonitoring.monitor' modifiers='public abstract' typeName='int' qualifiedTypeName='int' typeArgs='' dimension='' signature='()' flatSignature='()'>
+   <lead>
+Returns the number of alive threads created by the bundles in this
+ resource context.
+   </lead>
+   <description>
+Returns the number of alive threads created by the bundles in this
+ resource context. A Thread is considered to be alive when its java state
+ is one of the following:
+ <ul>
+ <li>RUNNABLE</li>
+ <li>BLOCKED</li>
+ <li>WAITING</li>
+ <li>TIMED_WAITING</li>
+ </ul>
+ <p>
+ The {@link #getUsage()} method returns the same value, wrapped in a int.</p>
+   </description>
+
+
+<return>the number of alive threads created by this resource context</return>
+
+
+
+     </method>
+  </class>
+  </package>
+</top>

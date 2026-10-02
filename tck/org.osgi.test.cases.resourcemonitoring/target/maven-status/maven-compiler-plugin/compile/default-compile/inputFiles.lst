@@ -1,0 +1,10 @@
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/SignatureTestCase.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/TC1_ResourceContextCreationRelatedTestCases.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/TC2_ResourceContextDeletionRelatedTestCases.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/TC3_ResourceContextBundleManagementTestCases.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/TC4_ResourceMonitorTestCase.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/TC5_ResourceConsumptionEventingTestCase.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/TC6_ResourceContextListenerTestCase.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/utils/FakeResourceMonitor.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/utils/FakeResourceMonitorFactory.java
+/home/stbischof/git/OSGI_MIGRATE/osgi_target/org.osgi.service.resourcemonitoring/tck/org.osgi.test.cases.resourcemonitoring/src/main/java/org/osgi/test/cases/resourcemonitoring/utils/ResourceContextListenerTestImpl.java

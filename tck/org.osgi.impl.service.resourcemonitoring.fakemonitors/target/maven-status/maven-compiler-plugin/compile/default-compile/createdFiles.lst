@@ -1,0 +1,4 @@
+org/osgi/impl/service/resourcemonitoring/fakemonitors/FakeResourceMonitorFactory$Lock.class
+org/osgi/impl/service/resourcemonitoring/fakemonitors/Activator.class
+org/osgi/impl/service/resourcemonitoring/fakemonitors/FakeMonitor.class
+org/osgi/impl/service/resourcemonitoring/fakemonitors/FakeResourceMonitorFactory.class
