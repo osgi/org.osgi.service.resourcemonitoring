@@ -18,8 +18,15 @@
 
 package org.osgi.test.cases.resourcemonitoring;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.resourcemonitoring.ResourceContext;
 import org.osgi.service.resourcemonitoring.ResourceContextEvent;
@@ -27,12 +34,15 @@ import org.osgi.service.resourcemonitoring.ResourceContextException;
 import org.osgi.service.resourcemonitoring.ResourceMonitoringService;
 import org.osgi.test.cases.resourcemonitoring.utils.FakeResourceMonitor;
 import org.osgi.test.cases.resourcemonitoring.utils.ResourceContextListenerTestImpl;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.common.annotation.InjectBundleContext;
 
 /**
  * @author $Id$
  */
-public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBundleControl {
+public class TC2_ResourceContextDeletionRelatedTestCases {
+
+	@InjectBundleContext
+	BundleContext		context;
 
 	/**
 	 * ResourceMonitoringService
@@ -44,17 +54,17 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 	 */
 	private ResourceContextListenerTestImpl	resourceContextListener;
 
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	public void setUp() throws Exception {
 
-		ServiceReference<ResourceMonitoringService> resourceMonitoringServiceSr = getContext()
+		ServiceReference<ResourceMonitoringService> resourceMonitoringServiceSr = context
 				.getServiceReference(ResourceMonitoringService.class);
 		if (resourceMonitoringServiceSr != null) {
-			resourceMonitoringService = getContext()
+			resourceMonitoringService = context
 					.getService(resourceMonitoringServiceSr);
 		}
 		resourceContextListener = new ResourceContextListenerTestImpl();
-		resourceContextListener.start(getContext());
+		resourceContextListener.start(context);
 
 		// delete all existing ResourceContext
 		ResourceContext[] existingContexts = resourceMonitoringService.listContext();
@@ -64,8 +74,8 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 		}
 	}
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 
 		resourceContextListener.stop();
 
@@ -87,6 +97,7 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 	 * @throws ResourceContextException
 	 *             , see {@link ResourceContext#removeContext(ResourceContext)}
 	 */
+	@Test
 	public void testDeletionOfAResourceContext() throws IllegalArgumentException, ResourceContextException {
 		final String name = "context1";
 
@@ -97,23 +108,22 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 		resourceContext.removeContext(null);
 
 		// check existing ResourceContext.
-		assertEquals("ResourceContext list must be empty.", 0, resourceMonitoringService.listContext().length);
-		assertNull("ResourceMonitoringService must not contain a ResourceContext named: " + name,
-				resourceMonitoringService.getContext(name));
+		assertThat(resourceMonitoringService.listContext().length).as("ResourceContext list must be empty.").isZero();
+		assertThat(resourceMonitoringService.getContext(name)).as("ResourceMonitoringService must not contain a ResourceContext named: " + name).isNull();
 
 		// check the resource context name is still accessible.
-		assertEquals("Name mismatch.", name, resourceContext.getName());
+		assertThat(resourceContext.getName()).as("Name mismatch.").isEqualTo(name);
 
 		// check the resource context bundleIds array.
-		assertNotNull("BundlesIds array must not be null.", resourceContext.getBundleIds());
-		assertEquals("BundlesIds array must not contain any bundleId.", 0, resourceContext.getBundleIds().length);
+		assertThat(resourceContext.getBundleIds()).as("BundlesIds array must not be null.").isNotNull();
+		assertThat(resourceContext.getBundleIds().length).as("BundlesIds array must not contain any bundleId.").isZero();
 
 		// check the resource context monitors.
 		try {
 			resourceContext.getMonitors();
 			fail("A ResourceContextException is expected.");
 		} catch (ResourceContextException e) {
-			log("Expected exception: " + e.getMessage());
+			System.out.println("Expected exception: " + e.getMessage());
 		}
 
 		// check it is not possible to add bundle.
@@ -121,7 +131,7 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 			resourceContext.addBundle(0);
 			fail("A ResourceContextException is expected.");
 		} catch (ResourceContextException e) {
-			log("Expected exception: " + e.getMessage());
+			System.out.println("Expected exception: " + e.getMessage());
 		}
 
 		// check it is not possible to add monitor.
@@ -129,14 +139,14 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 			resourceContext.addResourceMonitor(new FakeResourceMonitor());
 			fail("A ResourceContextException is expected here.");
 		} catch (ResourceContextException e) {
-			log("Expected exception: " + e.getMessage());
+			System.out.println("Expected exception: " + e.getMessage());
 		}
 
 		// check a ResourceContextEvent has been sent due to deletion.
 		ResourceContextEvent lastEvent = resourceContextListener.getLastEvent();
-		assertNotNull("LastEvent must not be null.", lastEvent);
-		assertEquals("ResourceContext mismatch.", resourceContext, lastEvent.getContext());
-		assertEquals("Last event type mismatch.", ResourceContextEvent.RESOURCE_CONTEXT_REMOVED, lastEvent.getType());
+		assertThat(lastEvent).as("LastEvent must not be null.").isNotNull();
+		assertThat(lastEvent.getContext()).as("ResourceContext mismatch.").isEqualTo(resourceContext);
+		assertThat(lastEvent.getType()).as("Last event type mismatch.").isEqualTo(ResourceContextEvent.RESOURCE_CONTEXT_REMOVED);
 	}
 
 	/**
@@ -149,19 +159,20 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 	 * @throws ResourceContextException
 	 *             , see {@link ResourceContext#addBundle(long)} {@link ResourceContext#removeContext(ResourceContext)}
 	 */
+	@Test
 	public void testDeletionOfAResourceContextWithADestinationResourceContext() throws IllegalArgumentException, ResourceContextException {
 		final String name1 = "context1";
 		final String name2 = "context2";
-		final long bundleId = getContext().getBundle().getBundleId();
+		final long bundleId = context.getBundle().getBundleId();
 
 		// create ResourceContexts
 		ResourceContext resourceContext1 = resourceMonitoringService.createContext(name1, null);
 		ResourceContext resourceContext2 = resourceMonitoringService.createContext(name2, null);
-		log("resourceContext1:" + resourceContext1);
-		log("resourceContext2:" + resourceContext2);
+		System.out.println("resourceContext1:" + resourceContext1);
+		System.out.println("resourceContext2:" + resourceContext2);
 
 		// checks the array of existing ResourceContext
-		assertEquals("ResourceContext list mismatch.", 2, resourceMonitoringService.listContext().length);
+		assertThat(resourceMonitoringService.listContext().length).as("ResourceContext list mismatch.").isEqualTo(2);
 
 		// associate bundleId with resourceContext1
 		resourceContext1.addBundle(bundleId);
@@ -183,54 +194,54 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 		// checks that context2 is the only existing ResourceContext that
 		// remains.
 		ResourceContext[] existingContexts = resourceMonitoringService.listContext();
-		assertEquals("ResourceContext list mismatch.", 1, existingContexts.length);
-		assertEquals("Name mismatch.", name2, existingContexts[0].getName());
+		assertThat(existingContexts.length).as("ResourceContext list mismatch.").isOne();
+		assertThat(existingContexts[0].getName()).as("Name mismatch.").isEqualTo(name2);
 
 		// check resourceContext1 (no associated bundle and no associated
 		// monitors)
 		long[] rc1BundleIds = resourceContext1.getBundleIds();
-		assertEquals("BundleIds list mismatch.", 0, rc1BundleIds.length);
+		assertThat(rc1BundleIds.length).as("BundleIds list mismatch.").isZero();
 		try {
 			resourceContext1.getMonitors();
 			fail("A ResourceContextException is expected.");
 		} catch (ResourceContextException e) {
-			log("Expected exception: " + e.getMessage());
+			System.out.println("Expected exception: " + e.getMessage());
 		}
 
 		// check bundleId belongs to resourceContext2
 		long[] rc2BundleIds = resourceContext2.getBundleIds();
-		assertEquals("BundleIds list mismatch.", 1, rc2BundleIds.length);
-		assertEquals("BundleId mismatch.", bundleId, rc2BundleIds[0]);
+		assertThat(rc2BundleIds.length).as("BundleIds list mismatch.").isOne();
+		assertThat(rc2BundleIds[0]).as("BundleId mismatch.").isEqualTo(bundleId);
 
 		// Check the received events.
 		List<ResourceContextEvent> receivedEvents = resourceContextListener
 				.getReceivedEvents();
-		log("nb of receivedEvent : " + receivedEvents.size());
-		assertEquals("Number of events mismatch.", 6, receivedEvents.size());
+		System.out.println("nb of receivedEvent : " + receivedEvents.size());
+		assertThat(receivedEvents).as("Number of events mismatch.").hasSize(6);
 
 		// The fourth received event is a BUNDLE_REMOVED ResourceContextEvent
 		// has been received
 		ResourceContextEvent fourthEvent = receivedEvents.get(3);
-		assertNotNull("FourthEvent must not be null.", fourthEvent);
-		assertEquals("Type mismatch.", ResourceContextEvent.BUNDLE_REMOVED, fourthEvent.getType());
-		assertEquals("ResourceContext mismatch.", resourceContext1, fourthEvent.getContext());
-		assertEquals("BundleId mismatch.", bundleId, fourthEvent.getBundleId());
+		assertThat(fourthEvent).as("FourthEvent must not be null.").isNotNull();
+		assertThat(fourthEvent.getType()).as("Type mismatch.").isEqualTo(ResourceContextEvent.BUNDLE_REMOVED);
+		assertThat(fourthEvent.getContext()).as("ResourceContext mismatch.").isEqualTo(resourceContext1);
+		assertThat(fourthEvent.getBundleId()).as("BundleId mismatch.").isEqualTo(bundleId);
 
 		// check a BUNDLE_ADDED ResourceContextEvent has been received (fifth
 		// received event)
 		ResourceContextEvent fifthEvent = receivedEvents.get(4);
-		assertNotNull("FifthEvent must not be null.", fifthEvent);
-		assertEquals("Type mismatch.", ResourceContextEvent.BUNDLE_ADDED, fifthEvent.getType());
-		assertEquals("ResourceContext mismatch.", resourceContext2, fifthEvent.getContext());
-		assertEquals("BundleId mismatch.", bundleId, fifthEvent.getBundleId());
+		assertThat(fifthEvent).as("FifthEvent must not be null.").isNotNull();
+		assertThat(fifthEvent.getType()).as("Type mismatch.").isEqualTo(ResourceContextEvent.BUNDLE_ADDED);
+		assertThat(fifthEvent.getContext()).as("ResourceContext mismatch.").isEqualTo(resourceContext2);
+		assertThat(fifthEvent.getBundleId()).as("BundleId mismatch.").isEqualTo(bundleId);
 
 		// check the sixth received event is a RESOURCE_CONTEXT_REMOVED
 		// event
 		ResourceContextEvent sixthEvent = receivedEvents.get(5);
-		assertNotNull("SixthEvent must not be null.", sixthEvent);
-		assertEquals("Type mismatch.", ResourceContextEvent.RESOURCE_CONTEXT_REMOVED, sixthEvent.getType());
-		assertEquals("ResourceContext mismatch.", resourceContext1, sixthEvent.getContext());
-		assertEquals("BundleId mismatch.", -1, sixthEvent.getBundleId());
+		assertThat(sixthEvent).as("SixthEvent must not be null.").isNotNull();
+		assertThat(sixthEvent.getType()).as("Type mismatch.").isEqualTo(ResourceContextEvent.RESOURCE_CONTEXT_REMOVED);
+		assertThat(sixthEvent.getContext()).as("ResourceContext mismatch.").isEqualTo(resourceContext1);
+		assertThat(sixthEvent.getBundleId()).as("BundleId mismatch.").isEqualTo(-1);
 	}
 
 	/**
@@ -243,11 +254,12 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 	 * @throws ResourceContextException
 	 *             , see {@link ResourceContext#addBundle(long)}, {@link ResourceContext#removeContext(ResourceContext)}
 	 */
+	@Test
 	public void testDeletionOfAResourceContextWithAPreviouslyDeletedResourceContextAsDestination() throws IllegalArgumentException,
 			ResourceContextException {
 		final String name1 = "name1";
 		final String name2 = "name2";
-		final long bundleId = getContext().getBundle().getBundleId();
+		final long bundleId = context.getBundle().getBundleId();
 
 		// create ResourceContexts
 		ResourceContext resourceContext1 = resourceMonitoringService.createContext(name1, null);
@@ -269,11 +281,11 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 			resourceContext1.addBundle(bundleId);
 			fail("A ResourceContextException is expected.");
 		} catch (ResourceContextException e) {
-			log("Expected exception: " + e.getMessage());
+			System.out.println("Expected exception: " + e.getMessage());
 		}
 
 		// check that there is no existing ResourceContext
-		assertEquals("ResourceContexts list mismatch.", 0, resourceMonitoringService.listContext().length);
+		assertThat(resourceMonitoringService.listContext().length).as("ResourceContexts list mismatch.").isZero();
 
 		// check events
 		List<ResourceContextEvent> events = resourceContextListener
@@ -285,39 +297,38 @@ public class TC2_ResourceContextDeletionRelatedTestCases extends DefaultTestBund
 		// - deletion of context2
 		// - removing of bundle1 from context1
 		// - deletion of context1
-		assertEquals("Number of events mismatch.", 6, events.size());
+		assertThat(events).as("Number of events mismatch.").hasSize(6);
 
 		// event RESOURCE_CONTEXT_CREATED for context1
 		ResourceContextEvent event = events.get(0);
-		assertEquals("Event type mismatch.", ResourceContextEvent.RESOURCE_CONTEXT_CREATED, event.getType());
-		assertEquals("Name mismatch.", name1, event.getContext().getName());
+		assertThat(event.getType()).as("Event type mismatch.").isEqualTo(ResourceContextEvent.RESOURCE_CONTEXT_CREATED);
+		assertThat(event.getContext().getName()).as("Name mismatch.").isEqualTo(name1);
 
 		// event RESOURCE_CONTEXT_CREATED for context2
 		event = events.get(1);
-		assertEquals("Type mismatch.", ResourceContextEvent.RESOURCE_CONTEXT_CREATED, event.getType());
-		assertEquals("Name mismatch.", name2, event.getContext().getName());
+		assertThat(event.getType()).as("Type mismatch.").isEqualTo(ResourceContextEvent.RESOURCE_CONTEXT_CREATED);
+		assertThat(event.getContext().getName()).as("Name mismatch.").isEqualTo(name2);
 
 		// event BUNDLE_ADDED for bundle1 and context1
 		event = events.get(2);
-		assertEquals("Type mismatch.", ResourceContextEvent.BUNDLE_ADDED, event.getType());
-		assertEquals("Name mismatch.", name1, event.getContext().getName());
-		assertEquals("BundleId mismatch.", bundleId, event.getBundleId());
+		assertThat(event.getType()).as("Type mismatch.").isEqualTo(ResourceContextEvent.BUNDLE_ADDED);
+		assertThat(event.getContext().getName()).as("Name mismatch.").isEqualTo(name1);
+		assertThat(event.getBundleId()).as("BundleId mismatch.").isEqualTo(bundleId);
 
 		// event RESOURCE_CONTEXT_REMOVED for context2
 		event = events.get(3);
-		assertEquals("Type mismatch.", ResourceContextEvent.RESOURCE_CONTEXT_REMOVED, event.getType());
-		assertEquals("Name mismatch.", name2, event.getContext().getName());
+		assertThat(event.getType()).as("Type mismatch.").isEqualTo(ResourceContextEvent.RESOURCE_CONTEXT_REMOVED);
+		assertThat(event.getContext().getName()).as("Name mismatch.").isEqualTo(name2);
 
 		// event BUNDLE_REMOVED from context1
 		event = events.get(4);
-		assertEquals("Type mismatch: ResourceContextEvent.BUNDLE_REMOVED is expected.", ResourceContextEvent.BUNDLE_REMOVED,
-				event.getType());
-		assertEquals("Name mismatch.", name1, event.getContext().getName());
-		assertEquals("BundleId mismatch.", bundleId, event.getBundleId());
+		assertThat(event.getType()).as("Type mismatch: ResourceContextEvent.BUNDLE_REMOVED is expected.").isEqualTo(ResourceContextEvent.BUNDLE_REMOVED);
+		assertThat(event.getContext().getName()).as("Name mismatch.").isEqualTo(name1);
+		assertThat(event.getBundleId()).as("BundleId mismatch.").isEqualTo(bundleId);
 
 		// event RESOURCE_CONTEXT_REMOVED for context2
 		event = events.get(5);
-		assertEquals("Type mismatch.", ResourceContextEvent.RESOURCE_CONTEXT_REMOVED, event.getType());
-		assertEquals("Name mismatch.", name1, event.getContext().getName());
+		assertThat(event.getType()).as("Type mismatch.").isEqualTo(ResourceContextEvent.RESOURCE_CONTEXT_REMOVED);
+		assertThat(event.getContext().getName()).as("Name mismatch.").isEqualTo(name1);
 	}
 }
