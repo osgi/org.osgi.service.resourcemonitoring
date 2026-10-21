@@ -25,6 +25,6 @@ package org.osgi.test.cases.resourcemonitoring;
  * 
  * @author $Id$
  */
-public class SignatureTestCase extends org.osgi.test.support.signature.SignatureTestCase {
+public class SignatureTestCase extends org.osgi.tck.signature.AbstractSignatureTest {
 	// concrete subclass
 }

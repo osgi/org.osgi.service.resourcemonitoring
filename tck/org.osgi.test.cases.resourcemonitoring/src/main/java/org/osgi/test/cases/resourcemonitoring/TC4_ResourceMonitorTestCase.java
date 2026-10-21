@@ -18,8 +18,15 @@
 
 package org.osgi.test.cases.resourcemonitoring;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import java.util.Collection;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -29,12 +36,15 @@ import org.osgi.service.resourcemonitoring.ResourceMonitor;
 import org.osgi.service.resourcemonitoring.ResourceMonitorException;
 import org.osgi.service.resourcemonitoring.ResourceMonitorFactory;
 import org.osgi.service.resourcemonitoring.ResourceMonitoringService;
-import org.osgi.test.support.compatibility.DefaultTestBundleControl;
+import org.osgi.test.common.annotation.InjectBundleContext;
 
 /**
  * @author $Id$
  */
-public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
+public class TC4_ResourceMonitorTestCase {
+
+	@InjectBundleContext
+	BundleContext		context;
 
 	/**
 	 * ResourceMonitoringService.
@@ -56,11 +66,11 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 	 */
 	private final String				resourceContextName	= "context1";
 
-	protected void setUp() throws Exception {
-		super.setUp();
-		ServiceReference<ResourceMonitoringService> serviceReference = getContext()
+	@BeforeEach
+	public void setUp() throws Exception {
+		ServiceReference<ResourceMonitoringService> serviceReference = context
 				.getServiceReference(ResourceMonitoringService.class);
-		resourceMonitoringService = getContext()
+		resourceMonitoringService = context
 				.getService(serviceReference);
 
 		StringBuffer filter = new StringBuffer();
@@ -77,7 +87,7 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 			@SuppressWarnings({
 					"rawtypes", "unchecked"
 			})
-			Collection<ServiceReference<ResourceMonitorFactory< ? >>> factoryReferences = (Collection) getContext()
+			Collection<ServiceReference<ResourceMonitorFactory< ? >>> factoryReferences = (Collection) context
 					.getServiceReferences(
 					ResourceMonitorFactory.class, filter.toString());
 			if (factoryReferences != null) {
@@ -85,7 +95,7 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 					ServiceReference<ResourceMonitorFactory< ? >> factoryReference = factoryReferences
 							.iterator()
 							.next();
-					cpuFactory = getContext()
+					cpuFactory = context
 							.getService(factoryReference);
 
 				}
@@ -97,11 +107,11 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 
 		resourceContext = resourceMonitoringService.createContext(resourceContextName, null);
 
-		assertNotNull("CpuFactory must not be null.", cpuFactory);
+		assertThat(cpuFactory).as("CpuFactory must not be null.").isNotNull();
 	}
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	public void tearDown() throws Exception {
 
 		resourceContext.removeContext(null);
 	}
@@ -116,51 +126,52 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 	 * @throws ResourceContextException
 	 *             , see {@link ResourceContext#getMonitors()}
 	 */
+	@Test
 	public void testCreationOfResourceMonitor() throws ResourceMonitorException, ResourceContextException {
 
 		// check existing resource monitors
 		ResourceMonitor< ? >[] monitors = resourceContext.getMonitors();
-		assertNotNull("Monitors list must not be null.", monitors);
-		assertEquals("Monitors list mismatch.", 0, monitors.length);
+		assertThat(monitors).as("Monitors list must not be null.").isNotNull();
+		assertThat(monitors.length).as("Monitors list mismatch.").isZero();
 
 		// create ResourceMonitor
 		ResourceMonitor< ? > resourceMonitor = cpuFactory
 				.createResourceMonitor(resourceContext);
-		assertNotNull("ResourceMonitor must not be null.", resourceMonitor);
+		assertThat(resourceMonitor).as("ResourceMonitor must not be null.").isNotNull();
 
 		// check ResourceContext
 		monitors = resourceContext.getMonitors();
-		assertEquals("ResourceMonitors list mismatch.", 1, monitors.length);
-		assertEquals("ResourceMonitor mismatch.", resourceMonitor, monitors[0]);
+		assertThat(monitors.length).as("ResourceMonitors list mismatch.").isOne();
+		assertThat(monitors[0]).as("ResourceMonitor mismatch.").isEqualTo(resourceMonitor);
 
 		// get monitor from ResourceContext
 		ResourceMonitor< ? > retrievedMonitor = resourceContext
 				.getMonitor(ResourceMonitoringService.RES_TYPE_CPU);
-		assertNotNull("ResourceMonitor must not be null.", retrievedMonitor);
-		assertEquals("ResourceMonitor mismatch.", resourceMonitor, retrievedMonitor);
+		assertThat(retrievedMonitor).as("ResourceMonitor must not be null.").isNotNull();
+		assertThat(retrievedMonitor).as("ResourceMonitor mismatch.").isEqualTo(resourceMonitor);
 
 		// check resource context from monitor
 		ResourceContext retrievedRC = resourceMonitor.getContext();
-		assertNotNull("ResourceContext must not be null.", retrievedRC);
-		assertEquals("ResourceContext mismatch.", resourceContext, retrievedRC);
+		assertThat(retrievedRC).as("ResourceContext must not be null.").isNotNull();
+		assertThat(retrievedRC).as("ResourceContext mismatch.").isEqualTo(resourceContext);
 
 		// check the newly ResourceMonitor
-		assertFalse("ResourceMonitor must not be enabled.", resourceMonitor.isEnabled());
-		assertFalse("ResourceMonitor must not be deleted.", resourceMonitor.isDeleted());
-		assertEquals("Type mismatch.", cpuFactory.getType(), resourceMonitor.getResourceType());
+		assertThat(resourceMonitor.isEnabled()).as("ResourceMonitor must not be enabled.").isFalse();
+		assertThat(resourceMonitor.isDeleted()).as("ResourceMonitor must not be deleted.").isFalse();
+		assertThat(resourceMonitor.getResourceType()).as("Type mismatch.").isEqualTo(cpuFactory.getType());
 
 		// create again a CPU Resource Monitor for this context
 		try {
 			cpuFactory.createResourceMonitor(resourceContext);
 			fail("A ResourceMonitorException is expected here.");
 		} catch (ResourceMonitorException e) {
-			log("Expected exception: " + e.getMessage());
+			System.out.println("Expected exception: " + e.getMessage());
 		}
 
 		// check the ResourceContext has still one ResourceMonitor
 		monitors = resourceContext.getMonitors();
-		assertEquals("ResourceMonitors list mismatch.", 1, monitors.length);
-		assertEquals("ResourceMonitor mismatch.", resourceMonitor, monitors[0]);
+		assertThat(monitors.length).as("ResourceMonitors list mismatch.").isOne();
+		assertThat(monitors[0]).as("ResourceMonitor mismatch.").isEqualTo(resourceMonitor);
 	}
 
 	/**
@@ -173,6 +184,7 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 	 * @throws ResourceContextException
 	 *             , see {@link ResourceMonitor#delete()} {@link ResourceContext#getMonitors()}
 	 */
+	@Test
 	public void testDeletionOfAResourceMonitorFromAResourceContext() throws ResourceMonitorException, ResourceContextException {
 		// create ResourceMonitor
 		ResourceMonitor< ? > resourceMonitor = cpuFactory
@@ -183,11 +195,11 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 
 		// check resource context monitors
 		ResourceMonitor< ? >[] monitors = resourceContext.getMonitors();
-		assertNotNull("ResourceMonitors list must not be null.", monitors);
-		assertEquals("ResourceMonitors list mismatch.", 0, monitors.length);
+		assertThat(monitors).as("ResourceMonitors list must not be null.").isNotNull();
+		assertThat(monitors.length).as("ResourceMonitors list mismatch.").isZero();
 
 		// check ResourceMonitor state
-		assertTrue("ResourceMonitor must have been deleted.", resourceMonitor.isDeleted());
+		assertThat(resourceMonitor.isDeleted()).as("ResourceMonitor must have been deleted.").isTrue();
 	}
 
 	/**
@@ -199,25 +211,26 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 	 *             , see {@link ResourceMonitorFactory#createResourceMonitor(ResourceContext)} {@link ResourceMonitor#enable()}
 	 *             {@link ResourceMonitor#disable()} {@link ResourceMonitor#delete()}
 	 */
+	@Test
 	public void testEnablingAndDisablingAResourceMonitor() throws ResourceMonitorException {
 		// create ResourceMonitor
 		ResourceMonitor< ? > resourceMonitor = cpuFactory
 				.createResourceMonitor(resourceContext);
 
 		// check the monitor is disabled by default
-		assertFalse("ResourceMonitor must not be enabled.", resourceMonitor.isEnabled());
+		assertThat(resourceMonitor.isEnabled()).as("ResourceMonitor must not be enabled.").isFalse();
 
 		// enable it
 		resourceMonitor.enable();
 
 		// check the monitor is enabled
-		assertTrue("ResourceMonitor must be enabled.", resourceMonitor.isEnabled());
+		assertThat(resourceMonitor.isEnabled()).as("ResourceMonitor must be enabled.").isTrue();
 
 		// disable it
 		resourceMonitor.disable();
 
 		// check the monitor is disabled
-		assertFalse("ResourceMonitor must not be enabled.", resourceMonitor.isEnabled());
+		assertThat(resourceMonitor.isEnabled()).as("ResourceMonitor must not be enabled.").isFalse();
 
 		// delete the monitor
 		resourceMonitor.delete();
@@ -228,7 +241,7 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 			resourceMonitor.enable();
 			fail("A ResourceMonitorException is expected.");
 		} catch (ResourceMonitorException e) {
-			log("Expected exception: " + e.getMessage());
+			System.out.println("Expected exception: " + e.getMessage());
 		}
 
 		// try to disable it ==> expect a ResourceMonitorException
@@ -236,7 +249,7 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 			resourceMonitor.disable();
 			fail("A ResourceMonitorException is expected.");
 		} catch (ResourceMonitorException e) {
-			log("Expected exception: " + e.getMessage());
+			System.out.println("Expected exception: " + e.getMessage());
 		}
 	}
 
@@ -249,25 +262,26 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 	 *             , see {@link ResourceMonitorFactory#createResourceMonitor(ResourceContext)} {@link ResourceMonitor#getUsage()}
 	 *             {@link ResourceMonitor#enable()} {@link ResourceMonitor#disable()} {@link ResourceMonitor#delete()}
 	 */
+	@Test
 	public void testRetrievingResourceUsage() throws ResourceMonitorException {
 		// create ResourceMonitor
 		ResourceMonitor< ? > resourceMonitor = cpuFactory
 				.createResourceMonitor(resourceContext);
 
 		// retrieves the resource usage
-		assertNotNull("Usage must not be null.", resourceMonitor.getUsage());
+		assertThat(resourceMonitor.getUsage()).as("Usage must not be null.").isNotNull();
 
 		// enable it
 		resourceMonitor.enable();
 
 		// retrieves the resource usage
-		assertNotNull("Usage must not be null.", resourceMonitor.getUsage());
+		assertThat(resourceMonitor.getUsage()).as("Usage must not be null.").isNotNull();
 
 		// disable it
 		resourceMonitor.disable();
 
 		// retrieves the resource usage
-		assertNotNull("Usage must not be null.", resourceMonitor.getUsage());
+		assertThat(resourceMonitor.getUsage()).as("Usage must not be null.").isNotNull();
 
 		// delete the monitor
 		resourceMonitor.delete();
@@ -277,7 +291,7 @@ public class TC4_ResourceMonitorTestCase extends DefaultTestBundleControl {
 			resourceMonitor.getUsage();
 			fail("A ResourceMonitorException is expected.");
 		} catch (ResourceMonitorException e) {
-			log("Expected exception: " + e.getMessage());
+			System.out.println("Expected exception: " + e.getMessage());
 		}
 	}
 
